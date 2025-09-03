@@ -8,4 +8,5 @@ layout: lightbox
 tags:
 - BW
 - Print
+- Inspiration
 ---

@@ -9,4 +9,5 @@ layout: lightbox
 tags:
 - Typography
 - Texture
+- Inspiration
 ---
