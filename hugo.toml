@@ -1,6 +1,6 @@
 baseURL = 'https://mood-site-tomas-gonzalez.netlify.app/'
 languageCode = 'en-gb'
-title = 'Mood'
+title = 'Visual Garden'
 disableKinds = ["section"]
 pygmentsCodeFences = false
 pygmentsUseClasses = false
