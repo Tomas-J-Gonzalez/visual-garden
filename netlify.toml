@@ -1,12 +1,16 @@
 [context.production.environment]
   HUGO_VERSION = "0.148.2"
+  HUGO_ENV = "production"
 
 [context.deploy-preview.environment]
   HUGO_VERSION = "0.148.2"
 
+[context.branch-deploy.environment]
+  HUGO_VERSION = "0.148.2"
+
 [build]
   publish = "public"
-  command = "hugo --gc --minify"
+  command = "hugo --gc --minify -b ${DEPLOY_PRIME_URL:-$URL}"
 
 # Cloudinary
 [[redirects]]
@@ -20,3 +24,10 @@ status = 200
   [headers.values]
     # Cache for one year
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
