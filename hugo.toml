@@ -1,4 +1,4 @@
-baseURL = 'http://example.org/'
+baseURL = 'https://mood-site-tomas-gonzalez.netlify.app/'
 languageCode = 'en-gb'
 title = 'Mood'
 disableKinds = ["section"]
