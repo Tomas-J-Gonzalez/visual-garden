@@ -24,7 +24,7 @@ theme = 'mood'
     url = "/about"
     weight = 5
   [[menu.main]]
-    name = "#inspirations"
+    name = "Inspirations"
     url = "/tags/inspiration/"
     weight = 12
   [[menu.main]]
