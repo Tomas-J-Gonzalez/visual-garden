@@ -15,7 +15,7 @@
 # Cloudinary
 [[redirects]]
 from = "/images/:format/:quality/:width/*"
-to = "https://res.cloudinary.com/harrycresswell/image/upload/:format/:quality/:width/:splat"
+to = "https://res.cloudinary.com/tomasgo/image/upload/:format/:quality/:width/:splat"
 status = 200
 
 # Netlify Headers
