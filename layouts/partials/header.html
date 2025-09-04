@@ -8,18 +8,4 @@
   {{ end }}
 </header>
 
-{{ if eq .Layout "lightbox" }}
-<script>
-(function(){
-  function handleKeydown(event){
-    if(event.key === 'Escape' || event.key === 'Esc'){
-      var closeLink = document.querySelector('a[aria-label="Close"]');
-      if(closeLink){ window.location.href = closeLink.getAttribute('href'); }
-    }
-  }
-  document.addEventListener('keydown', handleKeydown);
-})();
-</script>
-{{ end }}
-
 
