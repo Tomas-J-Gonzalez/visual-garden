@@ -64,10 +64,9 @@ jobs:
             fi
             # Slugify the public id for safety (lowercase, dashes, keep slashes)
             slug=$(echo "$name_no_ext" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9\/]+/-/g; s/-+/-/g; s#(^|/)\-+#\1#g; s#\-+($|/)#\1#g')
-            # Use a stable folder and deterministic public_id; overwrite to keep in sync
+            # Use a stable deterministic public_id including folder; overwrite to keep in sync
             cld uploader upload "$f" \
-              --folder "tomas-master/visual-garden" \
-              --public_id "$slug" \
+              --public_id "tomas-master/visual-garden/$slug" \
               --use_filename=false \
               --unique_filename=false \
               --overwrite=true \

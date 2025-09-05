@@ -76,8 +76,7 @@ const run = async () => {
     const cmd = [
       'cld', 'uploader', 'upload',
       absPath,
-      '--folder', 'tomas-master/visual-garden',
-      '--public_id', slug,
+      '--public_id', `tomas-master/visual-garden/${slug}`,
       '--use_filename=false',
       '--unique_filename=false',
       '--overwrite=true',
