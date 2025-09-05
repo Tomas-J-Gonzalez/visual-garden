@@ -16,9 +16,7 @@ pygmentsUseClasses = false
   keywords = "Harry Cresswell, mood, moodboard, design inspiration"
   cloudinary_url = "https://res.cloudinary.com/harrycresswell/image/upload/"
 
-[module]
-  [[module.imports]]
-    path = "github.com/harrycresswell/mood"
+
 
 [menu]
   [[menu.main]]
