@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'assets/uploads/**'
+      - 'content/post/**'
   workflow_dispatch:
 
 jobs:
@@ -30,16 +31,22 @@ jobs:
         env:
           CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
         run: |
-          shopt -s globstar nullglob
-          FILES=(assets/uploads/**/*.*)
+          shopt -s globstar nullglob extglob
+          FILES=(assets/uploads/**/*.* content/post/**/*.@(jpg|jpeg|png|webp|avif|gif))
           if [ ${#FILES[@]} -eq 0 ]; then
             echo "No files to upload."
             exit 0
           fi
           for f in "${FILES[@]}"; do
-            # Derive a public_id based on path relative to assets/uploads
-            rel="${f#assets/uploads/}"
-            name_no_ext="${rel%.*}"
+            # Determine relative path and public_id from source directory
+            if [[ "$f" == assets/uploads/* ]]; then
+              rel="${f#assets/uploads/}"
+              name_no_ext="${rel%.*}"
+            else
+              rel="${f#content/post/}"
+              # Prefix with post/ to keep structure stable in Cloudinary
+              name_no_ext="post/${rel%.*}"
+            fi
             # Use a stable folder and deterministic public_id; overwrite to keep in sync
             npx --yes @cloudinary/cli cld uploader upload "$f" \
               --folder "visual-garden" \
@@ -56,10 +63,15 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
         run: |
           echo "Uploaded files (by relative path):"
-          for f in assets/uploads/**/*.*; do
+          for f in assets/uploads/**/*.* content/post/**/*.@(jpg|jpeg|png|webp|avif|gif); do
             [ -f "$f" ] || continue
-            rel="${f#assets/uploads/}"
-            name_no_ext="${rel%.*}"
+            if [[ "$f" == assets/uploads/* ]]; then
+              rel="${f#assets/uploads/}"
+              name_no_ext="${rel%.*}"
+            else
+              rel="${f#content/post/}"
+              name_no_ext="post/${rel%.*}"
+            fi
             echo "https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/visual-garden/${name_no_ext}.jpg"
           done
 

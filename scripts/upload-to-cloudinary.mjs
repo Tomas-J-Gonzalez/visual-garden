@@ -8,6 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const uploadsRoot = new URL('../assets/uploads/', import.meta.url);
+const postsRoot = new URL('../content/post/', import.meta.url);
 
 async function listFilesRecursive(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -22,22 +23,40 @@ async function listFilesRecursive(dir) {
 }
 
 const run = async () => {
-  const rootPath = uploadsRoot.pathname;
-  let files = [];
+  const uploadsPath = uploadsRoot.pathname;
+  const postsPath = postsRoot.pathname;
+  let uploadFiles = [];
+  let postFiles = [];
   try {
-    files = await listFilesRecursive(rootPath);
+    uploadFiles = await listFilesRecursive(uploadsPath);
   } catch (e) {
     // Directory may not exist yet
-    files = [];
+    uploadFiles = [];
   }
-  files = files.filter(Boolean);
+  try {
+    postFiles = await listFilesRecursive(postsPath);
+  } catch {
+    postFiles = [];
+  }
+  const imageExt = /\.(jpg|jpeg|png|webp|avif|gif)$/i;
+  const files = [
+    ...uploadFiles.filter(Boolean),
+    ...postFiles.filter(Boolean).filter((p) => imageExt.test(p)),
+  ];
   if (files.length === 0) {
-    console.log('No files found in assets/uploads');
+    console.log('No image files found in assets/uploads or content/post');
     return;
   }
   for (const absPath of files) {
-    const relPath = relative(rootPath, absPath);
-    const publicId = relPath.replace(/\.[^/.]+$/, '');
+    let relPath;
+    let publicId;
+    if (absPath.startsWith(uploadsPath)) {
+      relPath = relative(uploadsPath, absPath);
+      publicId = relPath.replace(/\.[^/.]+$/, '');
+    } else {
+      relPath = relative(postsPath, absPath);
+      publicId = ('post/' + relPath).replace(/\.[^/.]+$/, '');
+    }
     const cmd = [
       'npx', '--yes', '@cloudinary/cli', 'cld', 'uploader', 'upload',
       absPath,
