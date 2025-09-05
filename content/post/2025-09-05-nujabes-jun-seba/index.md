@@ -6,7 +6,7 @@ layout: lightbox
 tags:
   - inspiration
   - music
-image: "visual-garden/post/2025-09-05-nujabes-jun-seba/nujabes.jpg"
+image: "tomas-master/visual-garden/post/2025-09-05-nujabes-jun-seba/nujabes.jpg"
 image_alt: "portrait photo"
 ---
 

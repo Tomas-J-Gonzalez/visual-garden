@@ -14,9 +14,9 @@ This repo syncs images to Cloudinary via CI using the official CLI. This avoids 
 ### Workflow
 
 - Place images under `content/post/<slug>/` alongside the post, or in `assets/uploads/`.
-- On push, GitHub Actions uploads them to Cloudinary folder `visual-garden/` with deterministic `public_id`:
-  - From `content/post/<slug>/foo.jpg` → `visual-garden/post/<slug>/foo`
-  - From `assets/uploads/bar.jpg` → `visual-garden/bar`
+- On push, GitHub Actions uploads them to Cloudinary folder `tomas-master/visual-garden/` with deterministic `public_id`:
+  - From `content/post/<slug>/foo.jpg` → `tomas-master/visual-garden/post/<slug>/foo`
+  - From `assets/uploads/bar.jpg` → `tomas-master/visual-garden/bar`
 - Re-uploads overwrite to keep files in sync.
 
 ### Local helper
@@ -31,10 +31,10 @@ This uploads files from `content/post/**` and `assets/uploads/` using the same s
 
 ### Referencing in content
 
-- Frontmatter `image:` should point to the id under `visual-garden/`. Example:
+- Frontmatter `image:` should point to the id under `tomas-master/visual-garden/`. Example:
 
 ```
-image: "visual-garden/post/tekken-3.jpg"
+image: "tomas-master/visual-garden/post/tekken-3.jpg"
 ```
 
 - The templates already use `/images/...` path via Netlify redirect to Cloudinary. Ensure `hugo.toml` and `netlify.toml` Cloudinary cloud names are in sync.

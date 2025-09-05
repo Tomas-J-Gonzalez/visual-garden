@@ -27,6 +27,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - name: Verify CLI availability
+        run: |
+          node -v
+          npm -v
+          npx --yes @cloudinary/cli cld -v
+
       - name: Upload images to Cloudinary
         env:
           CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
@@ -49,7 +55,7 @@ jobs:
             fi
             # Use a stable folder and deterministic public_id; overwrite to keep in sync
             npx --yes @cloudinary/cli cld uploader upload "$f" \
-              --folder "visual-garden" \
+              --folder "tomas-master/visual-garden" \
               --public_id "$name_no_ext" \
               --use_filename=false \
               --unique_filename=false \
@@ -72,7 +78,7 @@ jobs:
               rel="${f#content/post/}"
               name_no_ext="post/${rel%.*}"
             fi
-            echo "https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/visual-garden/${name_no_ext}.jpg"
+            echo "https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/tomas-master/visual-garden/${name_no_ext}.jpg"
           done
 
 

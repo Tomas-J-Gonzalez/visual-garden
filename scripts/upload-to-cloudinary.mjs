@@ -60,7 +60,7 @@ const run = async () => {
     const cmd = [
       'npx', '--yes', '@cloudinary/cli', 'cld', 'uploader', 'upload',
       absPath,
-      '--folder', 'visual-garden',
+      '--folder', 'tomas-master/visual-garden',
       '--public_id', publicId,
       '--use_filename=false',
       '--unique_filename=false',
