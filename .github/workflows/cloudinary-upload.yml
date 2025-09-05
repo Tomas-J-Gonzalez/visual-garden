@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'assets/uploads/**'
+  workflow_dispatch:
 
 jobs:
   upload:
@@ -17,8 +18,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Cloudinary CLI
-        run: npm i -g @cloudinary/cli
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Upload images to Cloudinary
         env:
@@ -35,7 +41,7 @@ jobs:
             rel="${f#assets/uploads/}"
             name_no_ext="${rel%.*}"
             # Use a stable folder and deterministic public_id; overwrite to keep in sync
-            cld uploader upload "$f" \
+            npx --yes @cloudinary/cli cld uploader upload "$f" \
               --folder "visual-garden" \
               --public_id "$name_no_ext" \
               --use_filename=false \
