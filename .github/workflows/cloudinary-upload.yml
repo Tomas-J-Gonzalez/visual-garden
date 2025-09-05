@@ -31,14 +31,23 @@ jobs:
         run: |
           node -v
           npm -v
-          npx --yes @cloudinary/cli cld -v
+          python3 -V || true
+          pip3 -V || true
+
+      - name: Install Cloudinary CLI (pip)
+        run: |
+          python3 -m pip install --user --upgrade cloudinary-cli
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          cld -v
 
       - name: Upload images to Cloudinary
         env:
           CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
         run: |
-          shopt -s globstar nullglob extglob
-          FILES=(assets/uploads/**/*.* content/post/**/*.@(jpg|jpeg|png|webp|avif|gif))
+          mapfile -t FILES < <(\
+            find assets/uploads content/post -type f \( \
+              -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.avif' -o -iname '*.gif' \
+            \) 2>/dev/null || true)
           if [ ${#FILES[@]} -eq 0 ]; then
             echo "No files to upload."
             exit 0
@@ -54,7 +63,7 @@ jobs:
               name_no_ext="post/${rel%.*}"
             fi
             # Use a stable folder and deterministic public_id; overwrite to keep in sync
-            npx --yes @cloudinary/cli cld uploader upload "$f" \
+            cld uploader upload "$f" \
               --folder "tomas-master/visual-garden" \
               --public_id "$name_no_ext" \
               --use_filename=false \
@@ -69,8 +78,11 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
         run: |
           echo "Uploaded files (by relative path):"
-          for f in assets/uploads/**/*.* content/post/**/*.@(jpg|jpeg|png|webp|avif|gif); do
-            [ -f "$f" ] || continue
+          mapfile -t FILES < <(\
+            find assets/uploads content/post -type f \( \
+              -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.avif' -o -iname '*.gif' \
+            \) 2>/dev/null || true)
+          for f in "${FILES[@]}"; do
             if [[ "$f" == assets/uploads/* ]]; then
               rel="${f#assets/uploads/}"
               name_no_ext="${rel%.*}"

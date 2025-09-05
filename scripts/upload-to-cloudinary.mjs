@@ -57,8 +57,17 @@ const run = async () => {
       relPath = relative(postsPath, absPath);
       publicId = ('post/' + relPath).replace(/\.[^/.]+$/, '');
     }
+    // Ensure python cloudinary-cli is available, then call `cld`
+    try {
+      execSync('cld -v', { stdio: 'ignore' });
+    } catch {
+      execSync('python3 -m pip install --user --upgrade cloudinary-cli', { stdio: 'inherit' });
+      try {
+        execSync('cld -v', { stdio: 'inherit' });
+      } catch {}
+    }
     const cmd = [
-      'npx', '--yes', '@cloudinary/cli', 'cld', 'uploader', 'upload',
+      'cld', 'uploader', 'upload',
       absPath,
       '--folder', 'tomas-master/visual-garden',
       '--public_id', publicId,
