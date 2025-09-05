@@ -68,7 +68,7 @@
 
           {{ with .Resources.GetMatch "{*.*,*.jpg,*.png,*.jpeg,*.webp,*.avif,*.gif}" }}
             {{- $src := . -}}
-            {{- $pageDir := $.File.Dir -}}
+            {{- $pageDir := .File.Dir -}}
             {{- $name := $src.Name -}}
             {{- $baseName := replaceRE "\\.[^.]+$" "" $name -}}
             {{- $slug := urlize $baseName -}}
