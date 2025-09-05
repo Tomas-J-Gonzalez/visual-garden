@@ -57,6 +57,13 @@ const run = async () => {
       relPath = relative(postsPath, absPath);
       publicId = ('post/' + relPath).replace(/\.[^/.]+$/, '');
     }
+    // Slugify: lowercase, dashes, keep slashes
+    const slug = publicId
+      .toLowerCase()
+      .replace(/[^a-z0-9\/]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/(^|\/)\-+/g, '$1')
+      .replace(/\-+($|\/)/g, '$1');
     // Ensure python cloudinary-cli is available, then call `cld`
     try {
       execSync('cld -v', { stdio: 'ignore' });
@@ -70,7 +77,7 @@ const run = async () => {
       'cld', 'uploader', 'upload',
       absPath,
       '--folder', 'tomas-master/visual-garden',
-      '--public_id', publicId,
+      '--public_id', slug,
       '--use_filename=false',
       '--unique_filename=false',
       '--overwrite=true',

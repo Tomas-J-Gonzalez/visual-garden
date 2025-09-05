@@ -62,10 +62,12 @@ jobs:
               # Prefix with post/ to keep structure stable in Cloudinary
               name_no_ext="post/${rel%.*}"
             fi
+            # Slugify the public id for safety (lowercase, dashes, keep slashes)
+            slug=$(echo "$name_no_ext" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9\/]+/-/g; s/-+/-/g; s#(^|/)\-+#\1#g; s#\-+($|/)#\1#g')
             # Use a stable folder and deterministic public_id; overwrite to keep in sync
             cld uploader upload "$f" \
               --folder "tomas-master/visual-garden" \
-              --public_id "$name_no_ext" \
+              --public_id "$slug" \
               --use_filename=false \
               --unique_filename=false \
               --overwrite=true \
@@ -90,7 +92,8 @@ jobs:
               rel="${f#content/post/}"
               name_no_ext="post/${rel%.*}"
             fi
-            echo "https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/tomas-master/visual-garden/${name_no_ext}.jpg"
+            slug=$(echo "$name_no_ext" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9\/]+/-/g; s/-+/-/g; s#(^|/)\-+#\1#g; s#\-+($|/)#\1#g')
+            echo "https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/tomas-master/visual-garden/${slug}.jpg"
           done
 
 
