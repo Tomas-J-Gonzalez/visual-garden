@@ -1,0 +1,60 @@
+name: Upload images to Cloudinary
+
+on:
+  push:
+    paths:
+      - 'assets/uploads/**'
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Cloudinary CLI
+        run: npm i -g @cloudinary/cli
+
+      - name: Upload images to Cloudinary
+        env:
+          CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
+        run: |
+          shopt -s globstar nullglob
+          FILES=(assets/uploads/**/*.*)
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "No files to upload."
+            exit 0
+          fi
+          for f in "${FILES[@]}"; do
+            # Derive a public_id based on path relative to assets/uploads
+            rel="${f#assets/uploads/}"
+            name_no_ext="${rel%.*}"
+            # Use a stable folder and deterministic public_id; overwrite to keep in sync
+            cld uploader upload "$f" \
+              --folder "visual-garden" \
+              --public_id "$name_no_ext" \
+              --use_filename=false \
+              --unique_filename=false \
+              --overwrite=true \
+              --invalidate=true
+          done
+
+      - name: List uploaded URLs
+        if: always()
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+        run: |
+          echo "Uploaded files (by relative path):"
+          for f in assets/uploads/**/*.*; do
+            [ -f "$f" ] || continue
+            rel="${f#assets/uploads/}"
+            name_no_ext="${rel%.*}"
+            echo "https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/visual-garden/${name_no_ext}.jpg"
+          done
+
+
