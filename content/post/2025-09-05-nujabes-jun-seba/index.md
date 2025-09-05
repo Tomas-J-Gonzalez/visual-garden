@@ -7,7 +7,7 @@ tags:
   - inspiration
   - music
   - people
-image: "tomas-master/visual-garden/post/2025-09-05-nujabes-jun-seba/suba-jen-nujabes.webp"
+image: "tomas-master/visual-garden/post/2025-09-05-nujabes-jun-seba/suba-jen-nujabes.jpg"
 image_alt: "portrait photo"
 ---
 
