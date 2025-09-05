@@ -66,11 +66,11 @@ const run = async () => {
       .replace(/\-+($|\/)/g, '$1');
     // Ensure python cloudinary-cli is available, then call `cld`
     try {
-      execSync('cld -v', { stdio: 'ignore' });
+      execSync('cld --version', { stdio: 'ignore' });
     } catch {
       execSync('python3 -m pip install --user --upgrade cloudinary-cli', { stdio: 'inherit' });
       try {
-        execSync('cld -v', { stdio: 'inherit' });
+        execSync('cld --version', { stdio: 'inherit' });
       } catch {}
     }
     const cmd = [

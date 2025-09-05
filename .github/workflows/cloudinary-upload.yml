@@ -38,7 +38,7 @@ jobs:
         run: |
           python3 -m pip install --user --upgrade cloudinary-cli
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          cld -v
+          cld --version
 
       - name: Upload images to Cloudinary
         env:
