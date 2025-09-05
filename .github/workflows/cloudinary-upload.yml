@@ -66,11 +66,11 @@ jobs:
             slug=$(echo "$name_no_ext" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9\/]+/-/g; s/-+/-/g; s#(^|/)\-+#\1#g; s#\-+($|/)#\1#g')
             # Use a stable deterministic public_id including folder; overwrite to keep in sync
             cld uploader upload "$f" \
-              --public_id "tomas-master/visual-garden/$slug" \
-              --use_filename=false \
-              --unique_filename=false \
-              --overwrite=true \
-              --invalidate=true
+              public_id="tomas-master/visual-garden/$slug" \
+              use_filename=false \
+              unique_filename=false \
+              overwrite=true \
+              invalidate=true
           done
 
       - name: List uploaded URLs

@@ -76,11 +76,11 @@ const run = async () => {
     const cmd = [
       'cld', 'uploader', 'upload',
       absPath,
-      '--public_id', `tomas-master/visual-garden/${slug}`,
-      '--use_filename=false',
-      '--unique_filename=false',
-      '--overwrite=true',
-      '--invalidate=true'
+      `public_id=tomas-master/visual-garden/${slug}`,
+      'use_filename=false',
+      'unique_filename=false',
+      'overwrite=true',
+      'invalidate=true'
     ];
     console.log('Uploading', relPath);
     execSync(cmd.join(' '), { stdio: 'inherit' });
