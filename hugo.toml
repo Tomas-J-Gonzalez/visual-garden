@@ -17,6 +17,10 @@ theme = 'mood'
   keywords = "Harry Cresswell, mood, moodboard, design inspiration"
   cloudinary_url = "https://res.cloudinary.com/tomasgo/image/upload/"
 
+[module]
+  [[module.imports]]
+    path = "github.com/harrycresswell/mood"
+
 [menu]
   [[menu.main]]
     pageRef = "about"
