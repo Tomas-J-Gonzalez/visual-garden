@@ -13,8 +13,8 @@
         try{
           if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
           if (typeof window.Lenis === 'function') {
-            // Match the manifesto site's defaults as closely as possible
-            var lenis = new window.Lenis({ lerp: 0.10, smoothWheel: true, smoothTouch: false, wheelMultiplier: 1 });
+            // Snappier inertial feel similar to the referenced site
+            var lenis = new window.Lenis({ lerp: 0.22, smoothWheel: true, smoothTouch: false, wheelMultiplier: 1.8 });
             function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
             requestAnimationFrame(raf);
           } else {
@@ -30,14 +30,14 @@
               if (e.ctrlKey) return; // let zoom
               e.preventDefault();
               var max = html.scrollHeight - window.innerHeight;
-              var mult = 1; // match Lenis default normalization
+              var mult = 1.8;
               target = clamp(target + e.deltaY * mult, 0, max);
               if (!ticking) requestAnimationFrame(step), ticking = true;
             }
             function step(){
               var diff = target - current;
-              // LERP ~0.10 similar to Lenis default
-              current += diff * 0.10;
+              // LERP larger => snappier
+              current += diff * 0.22;
               window.scrollTo(0, current);
               if (Math.abs(diff) > 0.5) {
                 requestAnimationFrame(step);
