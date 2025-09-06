@@ -3,3 +3,19 @@
   <a href="/index.xml">Feed</a>
 </footer>
 
+<script>
+  (function(){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var s=document.createElement('script');
+    s.src='https://unpkg.com/@studio-freight/lenis@1.0.41/bundled/lenis.min.js';
+    s.defer=true; s.onload=function(){
+      try {
+        var lenis=new Lenis({ lerp: 0.08, smoothWheel: true, smoothTouch: false });
+        function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+      } catch(e){}
+    };
+    document.body.appendChild(s);
+  })();
+</script>
+
