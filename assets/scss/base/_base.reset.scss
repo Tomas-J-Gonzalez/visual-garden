@@ -15,11 +15,15 @@
 
 html {
 	box-sizing: border-box;
-	scroll-behavior: smooth;
+	scroll-behavior: auto;
 	-moz-text-size-adjust: none;
 	-webkit-text-size-adjust: none;
 	text-size-adjust: none;
 	text-rendering: optimizeSpeed;
+}
+
+html.lenis {
+	scroll-behavior: auto !important;
 }
 
 html,

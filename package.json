@@ -9,9 +9,7 @@
     "node": ">=18"
   },
   "dependencies": {
-  },
-  "devDependencies": {
+    "@studio-freight/lenis": "^1.0.42",
+    "lenis": "^1.3.11"
   }
 }
-
-

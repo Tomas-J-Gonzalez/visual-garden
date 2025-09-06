@@ -83,6 +83,8 @@
   {{ end }}
   <!-- Favicon -->
   <link rel="icon" href="https://res.cloudinary.com/tomasgo/image/upload/v1711762206/tomas-master/img/favicon_j8oaji.png" sizes="32x32" type="image/png">
+  <!-- Lenis (local vendor to avoid CDN issues) -->
+  <script src="/vendor/lenis.min.js" defer></script>
   <!-- RSS -->
   {{ with .OutputFormats.Get "rss" -}}
     {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
