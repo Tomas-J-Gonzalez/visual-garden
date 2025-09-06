@@ -7,20 +7,14 @@
       {{- block "main" . }}{{- end }}
     </main>
     {{- block "footer" . }}{{- end }}
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.41/bundled/lenis.min.js"></script>
     <script>
       (function(){
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        var s=document.createElement('script');
-        s.src='https://unpkg.com/@studio-freight/lenis@1.0.41/bundled/lenis.min.js';
-        s.defer=true;
-        s.onload=function(){
-          try{
-            var lenis=new Lenis({ duration: 1.15, smoothWheel: true, smoothTouch: true, wheelMultiplier: 1.1 });
-            function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
-            requestAnimationFrame(raf);
-          }catch(e){}
-        };
-        document.body.appendChild(s);
+        if (typeof Lenis !== 'function') return;
+        var lenis=new Lenis({ duration: 1.15, smoothWheel: true, smoothTouch: true, wheelMultiplier: 1.1 });
+        function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
       })();
     </script>
   </body>
