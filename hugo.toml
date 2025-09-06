@@ -14,7 +14,7 @@ theme = 'mood'
 
 [params]
   description = "A moodboard of graphic inspiration."
-  keywords = "Harry Cresswell, mood, moodboard, design inspiration"
+  keywords = "mood, moodboard, design inspiration"
   cloudinary_url = "https://res.cloudinary.com/tomasgo/image/upload/"
 
 
