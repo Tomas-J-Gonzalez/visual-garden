@@ -10,7 +10,7 @@
     s.src='https://unpkg.com/@studio-freight/lenis@1.0.41/bundled/lenis.min.js';
     s.defer=true; s.onload=function(){
       try {
-        var lenis=new Lenis({ lerp: 0.08, smoothWheel: true, smoothTouch: false });
+        var lenis=new Lenis({ duration: 1.15, smoothWheel: true, smoothTouch: true, wheelMultiplier: 1.1 });
         function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
         requestAnimationFrame(raf);
       } catch(e){}
