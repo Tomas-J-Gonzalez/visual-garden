@@ -7,15 +7,47 @@
       {{- block "main" . }}{{- end }}
     </main>
     {{- block "footer" . }}{{- end }}
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.41/bundled/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js" crossorigin="anonymous"></script>
     <script>
-      (function(){
-        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        if (typeof Lenis !== 'function') return;
-        var lenis=new Lenis({ duration: 1.15, smoothWheel: true, smoothTouch: true, wheelMultiplier: 1.1 });
-        function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
-        requestAnimationFrame(raf);
-      })();
+      document.addEventListener('DOMContentLoaded', function(){
+        try{
+          if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          if (typeof window.Lenis === 'function') {
+            var lenis = new window.Lenis({ duration: 1.15, smoothWheel: true, smoothTouch: true, wheelMultiplier: 1.1 });
+            function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+          } else {
+            // Fallback inertial scroll (desktop only)
+            if ('ontouchstart' in window) return;
+            var html = document.documentElement;
+            var target = window.scrollY || window.pageYOffset;
+            var current = target;
+            var ticking = false;
+            html.classList.add('lenis','lenis-smooth');
+            function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+            function onWheel(e){
+              if (e.ctrlKey) return; // let zoom
+              e.preventDefault();
+              var max = html.scrollHeight - window.innerHeight;
+              target = clamp(target + e.deltaY, 0, max);
+              if (!ticking) requestAnimationFrame(step), ticking = true;
+            }
+            function step(){
+              var diff = target - current;
+              // LERP factor: smaller = more glide
+              current += diff * 0.08;
+              window.scrollTo(0, current);
+              if (Math.abs(diff) > 0.5) {
+                requestAnimationFrame(step);
+              } else {
+                window.scrollTo(0, target);
+                ticking = false;
+              }
+            }
+            window.addEventListener('wheel', onWheel, { passive: false });
+          }
+        }catch(e){ console.warn('Lenis init error', e); }
+      });
     </script>
   </body>
 </html>
