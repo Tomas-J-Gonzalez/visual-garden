@@ -2,7 +2,8 @@
 	<h1 class="mt20">#{{ .Title | title }}</h1>
 	<ul class="PostList grid">
 		
-		{{ range .Pages }}
+		{{ $sorted := sort .Pages "Date" "desc" }}
+		{{ range $sorted }}
 
 		<li class="PostList-item">
 			{{ $image_alt := .Params.image_alt }}

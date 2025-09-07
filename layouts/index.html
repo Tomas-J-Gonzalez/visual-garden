@@ -1,7 +1,9 @@
 {{ define "main" }}
   <h1 class="visually-hidden">{{ .Title }}</h1>
   <ul class="PostList grid">
-    {{ $paginator := .Paginate (where .Site.RegularPages "Type" "post") 40 }}
+    {{ $all := where .Site.RegularPages "Type" "post" }}
+    {{ $sorted := sort $all "Date" "desc" }}
+    {{ $paginator := .Paginate $sorted 40 }}
     {{ range $paginator.Pages }}
       <li class="PostList-item">
 
