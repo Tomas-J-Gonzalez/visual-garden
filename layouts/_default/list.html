@@ -114,7 +114,7 @@
 
 			{{ end }}
 			<h2 class="PostList-itemTitle">
-				<a class="PostList-itemLink" href="{{ .Permalink }}"> {{ .Title }}</a>
+				<a class="PostList-itemLink" href="{{ .Permalink }}"> {{ .Title }}{{ with .Params.video_url }} <span class="VideoIcon" aria-hidden="true">▶︎</span><span class="visually-hidden"> video</span>{{ end }}</a>
 			</h2>
 	</li>
 		{{ end }}

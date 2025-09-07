@@ -1,5 +1,6 @@
 {{ define "main" }}
   {{ $image_alt := .Params.image_alt }}
+  {{ $video_url := .Params.video_url }}
   <div class="Lightbox">
     <div class="Lightbox-inner">
     {{ if isset .Params "image" }}
@@ -12,6 +13,7 @@
         {{ $base = $cloudinary_url }}
       {{ end }}
 
+      {{ if $video_url }}<a href="{{ $video_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open video">{{ end }}
       <picture>
         {{ with $image }}
           <source 
@@ -58,6 +60,7 @@
           />
         {{ end }}
       </picture>
+      {{ if $video_url }}</a>{{ end }}
     {{ else }}
 
       {{/* If page resources exist with any of the specified formats and any file name. See https://gohugo.io/content-management/page-resources/ */}}
@@ -74,6 +77,7 @@
       {{/* Create a JPG of the image to serve as a “fallback” for browsers that don’t understand the `<picture>` element */}}
       {{- $actualImg := $src.Resize "640x jpg" -}}
 
+      {{ if $video_url }}<a href="{{ $video_url }}" target="_blank" rel="noopener noreferrer" aria-label="Open video">{{ end }}
       <div style="{{ $CFPstyle | safeCSS }}">
         <picture>
           <source 
@@ -104,6 +108,7 @@
             />
         </picture>
       </div>
+      {{ if $video_url }}</a>{{ end }}
     {{ end }}
 
     {{ end }}
