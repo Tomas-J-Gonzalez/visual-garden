@@ -3,7 +3,10 @@
     <h1>{{ .Title }}{{ with .Params.video_url }} <span class="VideoIcon" aria-hidden="true">▶︎</span><span class="visually-hidden"> video</span>{{ end }}</h1>
     <a href="/" aria-label="Close">Esc</a>
   {{ else }}
-    <a class="top" href="{{ $.Site.BaseURL }}">{{ .Site.Title }}</a>
+    <a class="top" href="{{ $.Site.BaseURL }}" aria-label="{{ .Site.Title }}">
+      <span class="Logo" aria-hidden="true">{{ partial "logo.inline.html" . | safeHTML }}</span>
+      <span class="visually-hidden">{{ .Site.Title }}</span>
+    </a>
     {{ partial "nav.html" . }}
   {{ end }}
 </header>

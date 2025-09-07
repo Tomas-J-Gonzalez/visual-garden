@@ -18,6 +18,26 @@ body {
 	gap: 1rem;
 }
 
+/* Logo in top nav */
+.Logo {
+  display: inline-block;
+  height: 32px;
+  width: auto;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+.Logo svg {
+  display: block;
+  height: 32px;
+  width: auto;
+}
+
+/* Default fill from SVG; on hover, set exact brand color */
+a.top:hover .Logo svg path {
+  fill: #1A4632 !important;
+}
+
 h1,
 h2,
 h3,
