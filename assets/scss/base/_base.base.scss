@@ -21,10 +21,10 @@ body {
 /* Logo in top nav */
 .Logo {
   display: inline-block;
-  height: 32px;
+  height: auto;
   width: auto;
   vertical-align: middle;
-  line-height: 0;
+  line-height: 1;
 }
 
 .Logo svg {
