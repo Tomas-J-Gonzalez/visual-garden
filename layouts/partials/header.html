@@ -4,8 +4,7 @@
     <a href="/" aria-label="Close">Esc</a>
   {{ else }}
     <a class="top" href="{{ $.Site.BaseURL }}" aria-label="{{ .Site.Title }}">
-      <span class="Logo" aria-hidden="true">{{ partial "logo.inline.html" . | safeHTML }}</span>
-      <span class="visually-hidden">{{ .Site.Title }}</span>
+      <span class="Logo">{{ .Site.Title }}</span>
     </a>
     {{ partial "nav.html" . }}
   {{ end }}
