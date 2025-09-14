@@ -1,4 +1,4 @@
-baseURL = 'https://mood-site-tomas-gonzalez.netlify.app/'
+baseURL = 'https://garden.tomasjgonzalez.com/'
 languageCode = 'en-gb'
 title = 'Visual Garden'
 disableKinds = ["section"]

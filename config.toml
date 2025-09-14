@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://garden.tomasjgonzalez.com/"
 languageCode = "en-gb"
 title = "Visual Garden"
 disableKinds = ["section"]
@@ -14,7 +14,7 @@ pygmentsUseClasses = false
 [params]
   description = "A moodboard of graphic inspiration."
   keywords = "mood, moodboard, design inspiration"
-  cloudinary_url = "https://res.cloudinary.com/harrycresswell/image/upload/"
+  cloudinary_url = "https://res.cloudinary.com/tomasgo/image/upload/"
 
 
 
