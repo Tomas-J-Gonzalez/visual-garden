@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Garden - Upload New Post</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #222;
+            color: #ececec;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            color: #fff;
+        }
+
+        .upload-area {
+            border: 2px dashed #555;
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: #333;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .upload-area.dragover {
+            border-color: #007acc;
+            background: #444;
+        }
+
+        .upload-area.has-files {
+            border-color: #28a745;
+            background: #2d4a2d;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: #333;
+            color: #ececec;
+            font-size: 1rem;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .tag {
+            background: #555;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            color: #ff6b6b;
+        }
+
+        .preview-area {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            background: #005a9e;
+        }
+
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #555;
+        }
+
+        .btn-secondary:hover {
+            background: #666;
+        }
+
+        .progress {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #333;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .progress-bar {
+            background: #007acc;
+            height: 20px;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .status.success {
+            background: #2d4a2d;
+            border: 1px solid #28a745;
+        }
+
+        .status.error {
+            background: #4a2d2d;
+            border: 1px solid #dc3545;
+        }
+
+        .file-list {
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: #333;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload New Post to Visual Garden</h1>
+        
+        <form id="uploadForm">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📸</div>
+                <p>Drag and drop your image here, or <label for="imageInput" style="color: #007acc; cursor: pointer; text-decoration: underline;">click to select</label></p>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            </div>
+
+            <div class="file-list" id="fileList"></div>
+
+            <div class="preview-area" id="previewArea"></div>
+
+            <div class="form-group">
+                <label for="title">Post Title *</label>
+                <input type="text" id="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="imageAlt">Image Alt Text *</label>
+                <input type="text" id="imageAlt" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tags">Tags (comma-separated)</label>
+                <input type="text" id="tags" placeholder="e.g., inspiration, design, minimalism">
+            </div>
+
+            <div class="form-group">
+                <label for="imageRatio">Image Ratio</label>
+                <select id="imageRatio">
+                    <option value="">Auto</option>
+                    <option value="square">Square</option>
+                    <option value="landscape">Landscape</option>
+                    <option value="portrait">Portrait</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="videoUrl">Video URL (optional)</label>
+                <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=...">
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="isDraft" checked> Save as draft
+                </label>
+            </div>
+
+            <button type="submit" class="btn" id="uploadBtn">Upload & Create Post</button>
+            <button type="button" class="btn btn-secondary" id="clearBtn">Clear Form</button>
+        </form>
+
+        <div class="progress hidden" id="progress">
+            <p>Uploading...</p>
+            <div class="progress-bar" style="width: 0%"></div>
+        </div>
+
+        <div class="status hidden" id="status"></div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const fileList = document.getElementById('fileList');
+        const previewArea = document.getElementById('previewArea');
+        const uploadForm = document.getElementById('uploadForm');
+        const progress = document.getElementById('progress');
+        const status = document.getElementById('status');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        let selectedFile = null;
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(Array.from(e.target.files));
+        });
+
+        function handleFiles(files) {
+            const imageFiles = files.filter(file => file.type.startsWith('image/'));
+            
+            if (imageFiles.length === 0) {
+                alert('Please select only image files.');
+                return;
+            }
+
+            if (imageFiles.length > 1) {
+                alert('Please select only one image at a time.');
+                return;
+            }
+
+            selectedFile = imageFiles[0];
+            displayFile(selectedFile);
+            updateFormFromFilename(selectedFile);
+        }
+
+        function displayFile(file) {
+            uploadArea.classList.add('has-files');
+            
+            fileList.innerHTML = `
+                <div class="file-item">
+                    <span>📷 ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    <button type="button" onclick="clearFile()" style="background: #dc3545; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer;">Remove</button>
+                </div>
+            `;
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewArea.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview" class="preview-image">
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateFormFromFilename(file) {
+            const name = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
+            const slugified = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+            
+            document.getElementById('title').value = name.replace(/[-_]/g, ' ');
+            document.getElementById('imageAlt').value = name.replace(/[-_]/g, ' ');
+            
+            // Auto-suggest tags based on filename
+            const suggestedTags = [];
+            if (name.toLowerCase().includes('abstract')) suggestedTags.push('abstract');
+            if (name.toLowerCase().includes('design')) suggestedTags.push('design');
+            if (name.toLowerCase().includes('minimal')) suggestedTags.push('minimalism');
+            if (name.toLowerCase().includes('type')) suggestedTags.push('typography');
+            if (name.toLowerCase().includes('art')) suggestedTags.push('art');
+            if (suggestedTags.length > 0) {
+                document.getElementById('tags').value = suggestedTags.join(', ');
+            }
+        }
+
+        function clearFile() {
+            selectedFile = null;
+            uploadArea.classList.remove('has-files');
+            fileList.innerHTML = '';
+            previewArea.innerHTML = '';
+            imageInput.value = '';
+        }
+
+        clearBtn.addEventListener('click', () => {
+            clearFile();
+            uploadForm.reset();
+            hideStatus();
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!selectedFile) {
+                alert('Please select an image file.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            formData.append('title', document.getElementById('title').value);
+            formData.append('imageAlt', document.getElementById('imageAlt').value);
+            formData.append('tags', document.getElementById('tags').value);
+            formData.append('imageRatio', document.getElementById('imageRatio').value);
+            formData.append('videoUrl', document.getElementById('videoUrl').value);
+            formData.append('isDraft', document.getElementById('isDraft').checked);
+
+            try {
+                showProgress();
+                uploadBtn.disabled = true;
+
+                const response = await fetch('/api/upload-post', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showStatus('success', `Post created successfully! ${result.message}`);
+                    uploadForm.reset();
+                    clearFile();
+                } else {
+                    showStatus('error', `Error: ${result.error}`);
+                }
+            } catch (error) {
+                showStatus('error', `Network error: ${error.message}`);
+            } finally {
+                hideProgress();
+                uploadBtn.disabled = false;
+            }
+        });
+
+        function showProgress() {
+            progress.classList.remove('hidden');
+            status.classList.add('hidden');
+        }
+
+        function hideProgress() {
+            progress.classList.add('hidden');
+        }
+
+        function showStatus(type, message) {
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            status.classList.add('hidden');
+        }
+    </script>
+</script>
+</body>
+</html>
