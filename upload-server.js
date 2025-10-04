@@ -5,8 +5,19 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs').promises;
 const { execSync } = require('child_process');
+const cloudinary = require('cloudinary').v2;
+
+// Load environment variables
+require('dotenv').config();
 const app = express();
 const PORT = 3001;
+
+// Configure Cloudinary (you'll need to set these environment variables)
+cloudinary.config({
+    cloud_name: 'tomasgo',
+    api_key: process.env.CLOUDINARY_API_KEY || 'your_api_key_here',
+    api_secret: process.env.CLOUDINARY_API_SECRET || 'your_api_secret_here'
+});
 
 // Configure multer for file uploads
 const upload = multer({
@@ -61,9 +72,9 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
         const imagePath = path.join(postDir, originalName);
         await fs.rename(req.file.path, imagePath);
 
-        // Upload to Cloudinary
+        // Upload to Cloudinary using API (no CLI needed)
         const cloudinaryPath = `tomas-master/visual-garden/post/${dateStr}-${slug}/${originalName}`;
-        await uploadToCloudinary(imagePath, cloudinaryPath);
+        const uploadResult = await uploadToCloudinaryAPI(imagePath, cloudinaryPath);
 
         // Create frontmatter
         const frontmatter = {
@@ -118,7 +129,8 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
         res.json({ 
             message: `Post created at ${postDir}`,
             slug: `${dateStr}-${slug}`,
-            cloudinaryPath: cloudinaryPath
+            cloudinaryPath: cloudinaryPath,
+            cloudinaryUrl: uploadResult.secure_url
         });
 
     } catch (error) {
@@ -127,54 +139,25 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
     }
 });
 
-async function uploadToCloudinary(filePath, publicId) {
+async function uploadToCloudinaryAPI(filePath, publicId) {
     try {
-        // Try different ways to run cloudinary CLI
-        let cldCommand = 'cld';
-        let isCLDAvailable = false;
+        console.log('Uploading to Cloudinary via API:', publicId);
         
-        try {
-            execSync('cld --version', { stdio: 'ignore' });
-            isCLDAvailable = true;
-        } catch {
-            try {
-                execSync('python3 -m cloudinary_cli.cli --version', { stdio: 'ignore' });
-                cldCommand = 'python3 -m cloudinary_cli.cli';
-                isCLDAvailable = true;
-            } catch {
-                console.log('Installing cloudinary-cli...');
-                execSync('python3 -m pip install --user --upgrade cloudinary-cli', { stdio: 'inherit' });
-                
-                // Try again after installation
-                try {
-                    execSync('cld --version', { stdio: 'ignore' });
-                    isCLDAvailable = true;
-                } catch {
-                    cldCommand = 'python3 -m cloudinary_cli.cli';
-                    isCLDAvailable = true;
-                }
-            }
-        }
-
-        if (!isCLDAvailable) {
-            throw new Error('Could not find or install cloudinary-cli');
-        }
-
-        const cmd = [
-            cldCommand, 'uploader', 'upload',
-            filePath,
-            `public_id=${publicId}`,
-            'use_filename=false',
-            'unique_filename=false',
-            'overwrite=true',
-            'invalidate=true'
-        ];
-
-        console.log('Uploading to Cloudinary:', publicId);
-        execSync(cmd.join(' '), { stdio: 'inherit' });
+        // Upload using Cloudinary API directly
+        const result = await cloudinary.uploader.upload(filePath, {
+            public_id: publicId,
+            use_filename: false,
+            unique_filename: false,
+            overwrite: true,
+            invalidate: true,
+            folder: 'tomas-master/visual-garden'
+        });
+        
+        console.log('Upload successful:', result.secure_url);
+        return result;
         
     } catch (error) {
-        throw new Error(`Cloudinary upload failed: ${error.message}`);
+        throw new Error(`Cloudinary API upload failed: ${error.message}`);
     }
 }
 
