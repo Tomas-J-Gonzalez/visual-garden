@@ -73,7 +73,8 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
         await fs.rename(req.file.path, imagePath);
 
         // Upload to Cloudinary using API (no CLI needed)
-        const cloudinaryPath = `post/${dateStr}-${slug}/${originalName}`;
+        const baseName = path.parse(originalName).name; // Remove extension
+        const cloudinaryPath = `post/${dateStr}-${slug}/${baseName}`;
         const uploadResult = await uploadToCloudinaryAPI(imagePath, cloudinaryPath);
 
         // Create frontmatter
