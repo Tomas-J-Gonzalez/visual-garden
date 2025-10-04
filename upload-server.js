@@ -73,7 +73,7 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
         await fs.rename(req.file.path, imagePath);
 
         // Upload to Cloudinary using API (no CLI needed)
-        const cloudinaryPath = `tomas-master/visual-garden/post/${dateStr}-${slug}/${originalName}`;
+        const cloudinaryPath = `post/${dateStr}-${slug}/${originalName}`;
         const uploadResult = await uploadToCloudinaryAPI(imagePath, cloudinaryPath);
 
         // Create frontmatter
@@ -82,7 +82,7 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
             date: timestamp,
             draft: false, // Always publish immediately
             layout: 'lightbox',
-            image: cloudinaryPath,
+            image: `tomas-master/visual-garden/${cloudinaryPath}`,
             image_alt: `"${imageAlt}"`
         };
 
@@ -129,7 +129,7 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
         res.json({ 
             message: `Post created at ${postDir}`,
             slug: `${dateStr}-${slug}`,
-            cloudinaryPath: cloudinaryPath,
+            cloudinaryPath: `tomas-master/visual-garden/${cloudinaryPath}`,
             cloudinaryUrl: uploadResult.secure_url
         });
 
