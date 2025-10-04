@@ -33,7 +33,7 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
             return res.status(400).json({ error: 'No image file provided' });
         }
 
-        const { title, imageAlt, tags, imageRatio, videoUrl, isDraft } = req.body;
+        const { title, imageAlt, tags, imageRatio, videoUrl } = req.body;
         
         if (!title || !imageAlt) {
             return res.status(400).json({ error: 'Title and image alt text are required' });
@@ -69,7 +69,7 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
         const frontmatter = {
             title: `"${title}"`,
             date: timestamp,
-            draft: isDraft === 'true',
+            draft: false, // Always publish immediately
             layout: 'lightbox',
             image: cloudinaryPath,
             image_alt: `"${imageAlt}"`
