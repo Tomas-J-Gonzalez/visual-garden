@@ -10,7 +10,7 @@ theme = 'mood'
   minifyOutput = true
 
 [permalinks]
-  post = ":slug/"
+  post = "/:slug/"
 
 [params]
   description = "A moodboard of graphic inspiration."
