@@ -10,7 +10,14 @@
 
 [build]
   publish = "public"
-  command = "hugo --gc --minify -b ${DEPLOY_PRIME_URL:-$URL}"
+  command = "hugo --gc --minify -b https://garden.tomasjgonzalez.com"
+
+# Redirect old Netlify URL to custom domain
+[[redirects]]
+from = "https://main--visual-garden.netlify.app/*"
+to = "https://garden.tomasjgonzalez.com/:splat"
+status = 301
+force = true
 
 # Cloudinary
 [[redirects]]
