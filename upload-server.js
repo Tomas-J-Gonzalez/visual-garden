@@ -32,13 +32,13 @@ const upload = multer({
             cb(new Error('Only image files are allowed'), false);
         }
     }
-});
+}).single('image');
 
 // Serve the upload GUI
 app.use(express.static('.'));
 
 // API endpoint for uploading posts
-app.post('/api/upload-post', upload.single('image'), async (req, res) => {
+app.post('/api/upload-post', upload, async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No image file provided' });
