@@ -165,6 +165,8 @@ async function uploadToCloudinaryAPI(filePath, publicId) {
 app.listen(PORT, () => {
     console.log(`🚀 Upload server running at http://localhost:${PORT}`);
     console.log(`📝 Upload GUI available at http://localhost:${PORT}/upload-gui.html`);
+    console.log(`🌐 Your live site: https://garden.tomasjgonzalez.com/`);
+    console.log(`📸 Upload images here to add them to your live site!`);
 });
 
 module.exports = app;

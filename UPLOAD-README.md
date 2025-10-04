@@ -18,7 +18,7 @@ A simple GUI tool for uploading new posts to your Visual Garden moodboard site.
    ```
 
 2. **Open the upload interface:**
-   Visit http://localhost:3001/upload-gui.html
+   Visit http://localhost:3001/upload-gui.html (local development only)
 
 3. **Upload your image:**
    - Drag & drop an image or click to select
