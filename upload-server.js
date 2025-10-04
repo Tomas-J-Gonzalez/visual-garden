@@ -129,16 +129,39 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
 
 async function uploadToCloudinary(filePath, publicId) {
     try {
-        // Check if cloudinary-cli is available
+        // Try different ways to run cloudinary CLI
+        let cldCommand = 'cld';
+        let isCLDAvailable = false;
+        
         try {
             execSync('cld --version', { stdio: 'ignore' });
+            isCLDAvailable = true;
         } catch {
-            console.log('Installing cloudinary-cli...');
-            execSync('python3 -m pip install --user --upgrade cloudinary-cli', { stdio: 'inherit' });
+            try {
+                execSync('python3 -m cloudinary_cli.cli --version', { stdio: 'ignore' });
+                cldCommand = 'python3 -m cloudinary_cli.cli';
+                isCLDAvailable = true;
+            } catch {
+                console.log('Installing cloudinary-cli...');
+                execSync('python3 -m pip install --user --upgrade cloudinary-cli', { stdio: 'inherit' });
+                
+                // Try again after installation
+                try {
+                    execSync('cld --version', { stdio: 'ignore' });
+                    isCLDAvailable = true;
+                } catch {
+                    cldCommand = 'python3 -m cloudinary_cli.cli';
+                    isCLDAvailable = true;
+                }
+            }
+        }
+
+        if (!isCLDAvailable) {
+            throw new Error('Could not find or install cloudinary-cli');
         }
 
         const cmd = [
-            'cld', 'uploader', 'upload',
+            cldCommand, 'uploader', 'upload',
             filePath,
             `public_id=${publicId}`,
             'use_filename=false',

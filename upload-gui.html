@@ -13,71 +13,131 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #222;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
             color: #ececec;
             line-height: 1.6;
             padding: 2rem;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 3rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem;
             color: #fff;
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, #ccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
         }
 
         .upload-area {
-            border: 2px dashed #555;
-            border-radius: 8px;
-            padding: 3rem 2rem;
+            border: 2px dashed #444;
+            border-radius: 12px;
+            padding: 4rem 2rem;
             text-align: center;
-            background: #333;
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .upload-area:hover::before {
+            left: 100%;
         }
 
         .upload-area.dragover {
             border-color: #007acc;
-            background: #444;
+            background: rgba(0, 122, 204, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 122, 204, 0.3);
         }
 
         .upload-area.has-files {
             border-color: #28a745;
-            background: #2d4a2d;
+            background: rgba(40, 167, 69, 0.1);
+            box-shadow: 0 0 20px rgba(40, 167, 69, 0.2);
         }
 
         .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.7;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1);
+            opacity: 1;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             font-weight: 500;
+            color: #ddd;
+            font-size: 1rem;
         }
 
         input, textarea, select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #555;
-            border-radius: 4px;
-            background: #333;
+            padding: 1rem;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
             color: #ececec;
             font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
         }
 
         input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #007acc;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.2);
+            transform: translateY(-1px);
+        }
+
+        input:hover, textarea:hover, select:hover {
+            border-color: #666;
+            background: rgba(255, 255, 255, 0.07);
         }
 
         textarea {
@@ -120,93 +180,167 @@
         }
 
         .btn {
-            background: #007acc;
+            background: linear-gradient(135deg, #007acc 0%, #005a9e 100%);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 4px;
-            font-size: 1rem;
+            padding: 1.25rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-right: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 122, 204, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn:hover {
-            background: #005a9e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 122, 204, 0.4);
+            background: linear-gradient(135deg, #0088dd 0%, #0066bb 100%);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn:disabled {
             background: #555;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-secondary {
-            background: #555;
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-secondary:hover {
-            background: #666;
+            background: linear-gradient(135deg, #777 0%, #555 100%);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
 
         .progress {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #333;
-            border-radius: 4px;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             display: none;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .progress-bar {
-            background: #007acc;
-            height: 20px;
-            border-radius: 10px;
+            background: linear-gradient(90deg, #007acc 0%, #00aaff 100%);
+            height: 8px;
+            border-radius: 4px;
             transition: width 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 0 10px rgba(0, 122, 204, 0.5);
         }
 
         .status {
-            margin-top: 1rem;
-            padding: 1rem;
-            border-radius: 4px;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 12px;
             display: none;
+            text-align: center;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
         }
 
         .status.success {
-            background: #2d4a2d;
-            border: 1px solid #28a745;
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            color: #90ee90;
+            box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
         }
 
         .status.error {
-            background: #4a2d2d;
-            border: 1px solid #dc3545;
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.3);
         }
 
         .file-list {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
 
         .file-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem;
-            background: #333;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
         }
 
         .hidden {
             display: none;
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                padding: 2rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 1rem;
+                margin-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Upload New Post to Visual Garden</h1>
+        <h1>Upload New Post</h1>
+        <p class="subtitle">Add new inspiration to your Visual Garden</p>
         
         <form id="uploadForm">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📸</div>
-                <p>Drag and drop your image here, or <label for="imageInput" style="color: #007acc; cursor: pointer; text-decoration: underline;">click to select</label></p>
+                <h3 style="margin-bottom: 0.5rem; color: #ddd; font-weight: 400;">Drop your image here</h3>
+                <p style="color: #888; margin-bottom: 0;">or <label for="imageInput" style="color: #007acc; cursor: pointer; text-decoration: underline; font-weight: 500;">browse files</label></p>
                 <input type="file" id="imageInput" accept="image/*" style="display: none;">
             </div>
 
