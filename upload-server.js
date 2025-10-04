@@ -126,11 +126,24 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
             // File might already be moved
         }
 
+        // Automatically commit and push to GitHub
+        try {
+            console.log('📝 Auto-committing changes to GitHub...');
+            execSync('git add .', { stdio: 'inherit' });
+            execSync(`git commit -m "feat: add new post - ${title}"`, { stdio: 'inherit' });
+            execSync('git push origin main', { stdio: 'inherit' });
+            console.log('✅ Successfully pushed to GitHub!');
+        } catch (gitError) {
+            console.warn('⚠️ Git auto-commit failed:', gitError.message);
+            // Don't fail the upload if git fails
+        }
+
         res.json({ 
             message: `Post created at ${postDir}`,
             slug: `${dateStr}-${slug}`,
             cloudinaryPath: `tomas-master/visual-garden/${cloudinaryPath}`,
-            cloudinaryUrl: uploadResult.secure_url
+            cloudinaryUrl: uploadResult.secure_url,
+            gitStatus: 'Committed and pushed to GitHub automatically'
         });
 
     } catch (error) {

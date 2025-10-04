@@ -564,10 +564,10 @@
                     updateProgressStep(3, 'Creating Hugo post...');
                     await new Promise(resolve => setTimeout(resolve, 300));
                     
-                    updateProgressStep(4, 'Upload complete!');
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    showStatus('success', `✅ Post created successfully!<br>📁 Location: ${result.slug}<br>☁️ Cloudinary: ${result.cloudinaryPath}<br><br><a href="https://garden.tomasjgonzalez.com/${result.slug}/" target="_blank" style="color: #90ee90; text-decoration: underline;">🌐 View on your live site →</a>`);
+             updateProgressStep(4, 'Upload complete!');
+             await new Promise(resolve => setTimeout(resolve, 500));
+             
+             showStatus('success', `✅ Post created successfully!<br>📁 Location: ${result.slug}<br>☁️ Cloudinary: ${result.cloudinaryPath}<br>🚀 ${result.gitStatus || 'Committed to GitHub'}<br><br><a href="https://garden.tomasjgonzalez.com/${result.slug}/" target="_blank" style="color: #90ee90; text-decoration: underline;">🌐 View on your live site →</a>`);
                     uploadForm.reset();
                     clearFile();
                 } else {
