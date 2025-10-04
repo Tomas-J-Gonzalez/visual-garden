@@ -75,6 +75,9 @@ app.post('/api/upload-post', upload.single('image'), async (req, res) => {
         // Upload to Cloudinary using API (no CLI needed)
         const baseName = path.parse(originalName).name; // Remove extension
         const cloudinaryPath = `post/${dateStr}-${slug}/${baseName}`;
+        console.log(`📁 Original filename: ${originalName}`);
+        console.log(`📁 Base name (no extension): ${baseName}`);
+        console.log(`📁 Cloudinary public_id: ${cloudinaryPath}`);
         const uploadResult = await uploadToCloudinaryAPI(imagePath, cloudinaryPath);
 
         // Create frontmatter
@@ -157,9 +160,13 @@ async function uploadToCloudinaryAPI(filePath, publicId) {
     try {
         console.log('Uploading to Cloudinary via API:', publicId);
         
+        // Ensure public_id has no file extension to prevent double extensions
+        const cleanPublicId = publicId.replace(/\.[^/.]+$/, '');
+        console.log(`🧹 Cleaned public_id (no extension): ${cleanPublicId}`);
+        
         // Upload using Cloudinary API directly
         const result = await cloudinary.uploader.upload(filePath, {
-            public_id: publicId,
+            public_id: cleanPublicId,
             use_filename: false,
             unique_filename: false,
             overwrite: true,
