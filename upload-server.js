@@ -86,7 +86,7 @@ app.post('/api/upload-post', upload, async (req, res) => {
             date: timestamp,
             draft: false, // Always publish immediately
             layout: 'lightbox',
-            image: `tomas-master/visual-garden/${cloudinaryPath}`,
+            image: `tomas-master/visual-garden/${cloudinaryPath}${extension}`,
             image_alt: `"${imageAlt}"`
         };
 
