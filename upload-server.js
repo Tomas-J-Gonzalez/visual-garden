@@ -34,13 +34,36 @@ const upload = multer({
     }
 }).single('image');
 
+// Global error handler for multer errors
+app.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        console.error('🚨 Multer Error:', error.message);
+        console.error('🚨 Error code:', error.code);
+        console.error('🚨 Request body fields:', Object.keys(req.body || {}));
+        
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ error: 'File too large. Maximum size is 50MB.' });
+        } else if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+            return res.status(400).json({ error: 'Unexpected field. Please make sure you are uploading a single image file.' });
+        } else {
+            return res.status(400).json({ error: `Upload error: ${error.message}` });
+        }
+    }
+    next(error);
+});
+
 // Serve the upload GUI
 app.use(express.static('.'));
 
 // API endpoint for uploading posts
 app.post('/api/upload-post', upload, async (req, res) => {
     try {
+        console.log('📨 Received upload request');
+        console.log('📁 Request body fields:', Object.keys(req.body));
+        console.log('📁 Request file:', req.file ? `${req.file.originalname} (${req.file.mimetype})` : 'No file');
+        
         if (!req.file) {
+            console.log('❌ No file provided in request');
             return res.status(400).json({ error: 'No image file provided' });
         }
 
@@ -131,14 +154,26 @@ app.post('/api/upload-post', upload, async (req, res) => {
         }
 
         // Automatically commit and push to GitHub
+        let gitStatus = 'Failed to commit';
         try {
             console.log('📝 Auto-committing changes to GitHub...');
-            execSync('git add .', { stdio: 'inherit' });
-            execSync(`git commit -m "feat: add new post - ${title}"`, { stdio: 'inherit' });
-            execSync('git push origin main', { stdio: 'inherit' });
-            console.log('✅ Successfully pushed to GitHub!');
+            
+            // Check if there are any changes to commit
+            const gitStatusOutput = execSync('git status --porcelain', { encoding: 'utf8' });
+            if (!gitStatusOutput.trim()) {
+                console.log('ℹ️ No changes to commit');
+                gitStatus = 'No changes to commit';
+            } else {
+                console.log('📁 Changes detected:', gitStatusOutput);
+                execSync('git add .', { stdio: 'inherit' });
+                execSync(`git commit -m "feat: add new post - ${title}"`, { stdio: 'inherit' });
+                execSync('git push origin main', { stdio: 'inherit' });
+                console.log('✅ Successfully pushed to GitHub!');
+                gitStatus = 'Committed and pushed to GitHub automatically';
+            }
         } catch (gitError) {
-            console.warn('⚠️ Git auto-commit failed:', gitError.message);
+            console.error('⚠️ Git auto-commit failed:', gitError.message);
+            gitStatus = `Git commit failed: ${gitError.message}`;
             // Don't fail the upload if git fails
         }
 
@@ -147,11 +182,25 @@ app.post('/api/upload-post', upload, async (req, res) => {
             slug: `${dateStr}-${slug}`,
             cloudinaryPath: `tomas-master/visual-garden/${cloudinaryPath}`,
             cloudinaryUrl: uploadResult.secure_url,
-            gitStatus: 'Committed and pushed to GitHub automatically'
+            gitStatus: gitStatus
         });
 
     } catch (error) {
         console.error('Upload error:', error);
+        
+        // Try to commit any changes that might have been created before the error
+        try {
+            const gitStatusOutput = execSync('git status --porcelain', { encoding: 'utf8' });
+            if (gitStatusOutput.trim()) {
+                console.log('📝 Attempting to commit changes before error response...');
+                execSync('git add .', { stdio: 'inherit' });
+                execSync('git commit -m "fix: partial upload recovery"', { stdio: 'inherit' });
+                console.log('✅ Committed pending changes');
+            }
+        } catch (gitError) {
+            console.warn('⚠️ Could not commit pending changes:', gitError.message);
+        }
+        
         res.status(500).json({ error: error.message });
     }
 });
