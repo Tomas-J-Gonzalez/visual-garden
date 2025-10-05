@@ -142,9 +142,13 @@ app.post('/api/upload-post', upload, async (req, res) => {
         });
         yaml += '---\n\n';
 
+        console.log('📝 Generated frontmatter:', yaml);
+
         // Write index.md file
         const indexPath = path.join(postDir, 'index.md');
+        console.log('📁 Writing index.md to:', indexPath);
         await fs.writeFile(indexPath, yaml);
+        console.log('✅ Successfully wrote index.md');
 
         // Clean up temp file
         try {
