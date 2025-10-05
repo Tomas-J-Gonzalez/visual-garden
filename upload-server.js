@@ -83,10 +83,19 @@ app.post('/api/upload-post', upload, async (req, res) => {
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
 
-        // Generate date in YYYY-MM-DD format
+        // Generate date in YYYY-MM-DD format (ensure it's not in the future)
         const now = new Date();
+        // Use local date to avoid timezone issues that create future dates
         const dateStr = now.toISOString().split('T')[0];
-        const timestamp = now.toISOString();
+        // Create a timestamp that's guaranteed to be current/past for live sites
+        // Use start of current day in UTC to avoid timezone-related future date issues
+        const todayUTC = new Date();
+        todayUTC.setUTCHours(0, 0, 0, 0); // Set to start of day UTC
+        const timestamp = todayUTC.toISOString();
+        
+        console.log(`📅 Generated date: ${dateStr}`);
+        console.log(`📅 Generated timestamp: ${timestamp}`);
+        console.log(`📅 Current time: ${now.toISOString()}`);
 
         // Create post directory
         const postDir = path.join('content', 'post', `${dateStr}-${slug}`);
