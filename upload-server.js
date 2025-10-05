@@ -52,6 +52,9 @@ app.use((error, req, res, next) => {
     next(error);
 });
 
+// Middleware for parsing JSON
+app.use(express.json());
+
 // Serve the upload GUI
 app.use(express.static('.'));
 
@@ -205,6 +208,180 @@ app.post('/api/upload-post', upload, async (req, res) => {
             console.warn('⚠️ Could not commit pending changes:', gitError.message);
         }
         
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API endpoint to get all posts
+app.get('/api/posts', async (req, res) => {
+    try {
+        const postsDir = path.join('content', 'post');
+        const postDirs = await fs.readdir(postsDir);
+        
+        const posts = [];
+        
+        for (const dir of postDirs) {
+            if (dir.startsWith('.')) continue; // Skip hidden files
+            
+            const indexPath = path.join(postsDir, dir, 'index.md');
+            try {
+                const content = await fs.readFile(indexPath, 'utf8');
+                
+                // Parse frontmatter
+                const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+                if (frontmatterMatch) {
+                    const frontmatter = {};
+                    const lines = frontmatterMatch[1].split('\n');
+                    
+                    for (const line of lines) {
+                        const match = line.match(/^(\w+):\s*(.*)$/);
+                        if (match) {
+                            let value = match[2].trim();
+                            // Remove quotes if present
+                            if ((value.startsWith('"') && value.endsWith('"')) || 
+                                (value.startsWith("'") && value.endsWith("'"))) {
+                                value = value.slice(1, -1);
+                            }
+                            frontmatter[match[1]] = value;
+                        }
+                    }
+                    
+                    // Parse tags array
+                    const tagLines = lines.filter(line => line.trim().startsWith('- '));
+                    if (tagLines.length > 0) {
+                        frontmatter.tags = tagLines.map(line => line.replace(/^\s*-\s*/, '').trim());
+                    }
+                    
+                    posts.push({
+                        slug: dir,
+                        title: frontmatter.title || 'Untitled',
+                        date: frontmatter.date || '',
+                        image: frontmatter.image || '',
+                        image_alt: frontmatter.image_alt || '',
+                        tags: frontmatter.tags || [],
+                        video_url: frontmatter.video_url || '',
+                        image_ratio: frontmatter.image_ratio || '',
+                        draft: frontmatter.draft === 'true'
+                    });
+                }
+            } catch (error) {
+                console.warn(`Could not read ${indexPath}:`, error.message);
+            }
+        }
+        
+        // Sort by date descending (newest first)
+        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        res.json({ posts });
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API endpoint to update a post
+app.put('/api/posts/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const { title, imageAlt, tags, imageRatio, videoUrl } = req.body;
+        
+        const indexPath = path.join('content', 'post', slug, 'index.md');
+        
+        // Read current content
+        let content = await fs.readFile(indexPath, 'utf8');
+        
+        // Parse and update frontmatter
+        const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+        if (!frontmatterMatch) {
+            return res.status(400).json({ error: 'Invalid post format' });
+        }
+        
+        const frontmatter = {};
+        const lines = frontmatterMatch[1].split('\n');
+        
+        for (const line of lines) {
+            const match = line.match(/^(\w+):\s*(.*)$/);
+            if (match) {
+                let value = match[2].trim();
+                if ((value.startsWith('"') && value.endsWith('"')) || 
+                    (value.startsWith("'") && value.endsWith("'"))) {
+                    value = value.slice(1, -1);
+                }
+                frontmatter[match[1]] = value;
+            }
+        }
+        
+        // Update fields
+        if (title) frontmatter.title = title;
+        if (imageAlt) frontmatter.image_alt = imageAlt;
+        if (imageRatio) frontmatter.image_ratio = imageRatio;
+        if (videoUrl) frontmatter.video_url = videoUrl;
+        if (tags) {
+            const tagArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+            frontmatter.tags = tagArray;
+        }
+        
+        // Generate new YAML
+        let yaml = '---\n';
+        Object.entries(frontmatter).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+                yaml += `${key}:\n`;
+                value.forEach(tag => {
+                    yaml += `  - ${tag}\n`;
+                });
+            } else {
+                yaml += `${key}: ${value}\n`;
+            }
+        });
+        yaml += '---\n\n';
+        
+        // Write updated content
+        await fs.writeFile(indexPath, yaml);
+        
+        // Auto-commit changes
+        try {
+            execSync('git add .', { stdio: 'inherit' });
+            execSync(`git commit -m "update: edit post - ${title || slug}"`, { stdio: 'inherit' });
+            execSync('git push origin main', { stdio: 'inherit' });
+        } catch (gitError) {
+            console.warn('⚠️ Git commit failed:', gitError.message);
+        }
+        
+        res.json({ message: 'Post updated successfully' });
+    } catch (error) {
+        console.error('Error updating post:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API endpoint to delete a post
+app.delete('/api/posts/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const postDir = path.join('content', 'post', slug);
+        
+        // Check if directory exists
+        try {
+            await fs.access(postDir);
+        } catch (error) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        
+        // Remove the entire post directory
+        await fs.rm(postDir, { recursive: true, force: true });
+        
+        // Auto-commit changes
+        try {
+            execSync('git add .', { stdio: 'inherit' });
+            execSync(`git commit -m "delete: remove post - ${slug}"`, { stdio: 'inherit' });
+            execSync('git push origin main', { stdio: 'inherit' });
+        } catch (gitError) {
+            console.warn('⚠️ Git commit failed:', gitError.message);
+        }
+        
+        res.json({ message: 'Post deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting post:', error);
         res.status(500).json({ error: error.message });
     }
 });

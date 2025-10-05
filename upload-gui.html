@@ -331,6 +331,158 @@
             display: none;
         }
 
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: #ccc;
+        }
+
+        .tab-btn.active {
+            color: #007acc;
+            border-bottom-color: #007acc;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .posts-list {
+            margin-top: 2rem;
+        }
+
+        .post-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .post-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .post-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: rgba(0, 122, 204, 0.2);
+            color: #007acc;
+            border: 1px solid rgba(0, 122, 204, 0.3);
+        }
+
+        .edit-btn:hover {
+            background: rgba(0, 122, 204, 0.3);
+        }
+
+        .delete-btn {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .delete-btn:hover {
+            background: rgba(220, 53, 69, 0.3);
+        }
+
+        .post-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            background: rgba(0, 122, 204, 0.2);
+            color: #007acc;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .edit-form {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .edit-form.active {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 1rem;
@@ -358,10 +510,16 @@
 </head>
 <body>
     <div class="container">
-        <h1>Upload New Post</h1>
-        <p class="subtitle">Add new inspiration to your <a href="https://garden.tomasjgonzalez.com/" target="_blank" style="color: #007acc; text-decoration: underline;">Visual Garden</a></p>
+        <h1>Visual Garden Manager</h1>
+        <p class="subtitle">Manage your <a href="https://garden.tomasjgonzalez.com/" target="_blank" style="color: #007acc; text-decoration: underline;">Visual Garden</a></p>
         
-        <form id="uploadForm">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('upload')">📸 Upload New</button>
+            <button class="tab-btn" onclick="showTab('manage')">📋 Manage Posts</button>
+        </div>
+        
+        <div id="uploadTab" class="tab-content active">
+            <form id="uploadForm">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📸</div>
                 <h3 style="margin-bottom: 0.5rem; color: #ddd; font-weight: 400;">Drop your image here</h3>
@@ -419,6 +577,13 @@
         </div>
 
         <div class="status hidden" id="status"></div>
+        </div>
+
+        <div id="manageTab" class="tab-content">
+            <div class="posts-list" id="postsList">
+                <div class="loading">Loading posts...</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -625,6 +790,181 @@
 
         function hideStatus() {
             status.classList.add('hidden');
+        }
+
+        // Tab switching functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Load posts if manage tab is selected
+            if (tabName === 'manage') {
+                loadPosts();
+            }
+        }
+
+        // Load and display all posts
+        async function loadPosts() {
+            try {
+                const response = await fetch('/api/posts');
+                const data = await response.json();
+                
+                const postsList = document.getElementById('postsList');
+                
+                if (data.posts && data.posts.length > 0) {
+                    postsList.innerHTML = data.posts.map(post => `
+                        <div class="post-item" id="post-${post.slug}">
+                            <div class="post-header">
+                                <h3 class="post-title">${post.title}</h3>
+                                <div class="post-actions">
+                                    <button class="action-btn edit-btn" onclick="editPost('${post.slug}')">✏️ Edit</button>
+                                    <button class="action-btn delete-btn" onclick="deletePost('${post.slug}', '${post.title}')">🗑️ Delete</button>
+                                </div>
+                            </div>
+                            <div class="post-meta">
+                                <div><strong>Date:</strong> ${new Date(post.date).toLocaleDateString()}</div>
+                                <div><strong>Slug:</strong> ${post.slug}</div>
+                                <div><strong>Image Alt:</strong> ${post.image_alt || 'Not set'}</div>
+                                ${post.video_url ? `<div><strong>Video:</strong> <a href="${post.video_url}" target="_blank">Link</a></div>` : ''}
+                            </div>
+                            ${post.tags.length > 0 ? `
+                                <div class="post-tags">
+                                    ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                            <div class="edit-form" id="edit-form-${post.slug}">
+                                <h4>Edit Post</h4>
+                                <form onsubmit="updatePost('${post.slug}', event)">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Title</label>
+                                            <input type="text" name="title" value="${post.title}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Image Alt Text</label>
+                                            <input type="text" name="imageAlt" value="${post.image_alt || ''}" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Tags (comma-separated)</label>
+                                            <input type="text" name="tags" value="${post.tags.join(', ')}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Image Ratio</label>
+                                            <select name="imageRatio">
+                                                <option value="" ${!post.image_ratio ? 'selected' : ''}>Auto</option>
+                                                <option value="square" ${post.image_ratio === 'square' ? 'selected' : ''}>Square</option>
+                                                <option value="landscape" ${post.image_ratio === 'landscape' ? 'selected' : ''}>Landscape</option>
+                                                <option value="portrait" ${post.image_ratio === 'portrait' ? 'selected' : ''}>Portrait</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Video URL (optional)</label>
+                                        <input type="url" name="videoUrl" value="${post.video_url || ''}">
+                                    </div>
+                                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                        <button type="submit" class="btn">💾 Save Changes</button>
+                                        <button type="button" class="btn btn-secondary" onclick="cancelEdit('${post.slug}')">❌ Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    postsList.innerHTML = '<div class="loading">No posts found.</div>';
+                }
+            } catch (error) {
+                document.getElementById('postsList').innerHTML = `<div class="status error">Error loading posts: ${error.message}</div>`;
+            }
+        }
+
+        // Edit post functionality
+        function editPost(slug) {
+            // Hide all other edit forms
+            document.querySelectorAll('.edit-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Show edit form for this post
+            document.getElementById(`edit-form-${slug}`).classList.add('active');
+        }
+
+        // Cancel edit
+        function cancelEdit(slug) {
+            document.getElementById(`edit-form-${slug}`).classList.remove('active');
+        }
+
+        // Update post
+        async function updatePost(slug, event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = {
+                title: formData.get('title'),
+                imageAlt: formData.get('imageAlt'),
+                tags: formData.get('tags'),
+                imageRatio: formData.get('imageRatio'),
+                videoUrl: formData.get('videoUrl')
+            };
+            
+            try {
+                const response = await fetch(`/api/posts/${slug}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    showStatus('success', '✅ Post updated successfully!');
+                    cancelEdit(slug);
+                    loadPosts(); // Reload the posts list
+                } else {
+                    const error = await response.json();
+                    showStatus('error', `❌ Update failed: ${error.error}`);
+                }
+            } catch (error) {
+                showStatus('error', `❌ Network error: ${error.message}`);
+            }
+        }
+
+        // Delete post
+        async function deletePost(slug, title) {
+            if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/posts/${slug}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    showStatus('success', '✅ Post deleted successfully!');
+                    loadPosts(); // Reload the posts list
+                } else {
+                    const error = await response.json();
+                    showStatus('error', `❌ Delete failed: ${error.error}`);
+                }
+            } catch (error) {
+                showStatus('error', `❌ Network error: ${error.message}`);
+            }
         }
     </script>
 </body>
