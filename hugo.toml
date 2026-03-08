@@ -1,5 +1,6 @@
 baseURL = 'https://garden.tomasjgonzalez.com/'
 languageCode = 'en-gb'
+timeZone = 'Pacific/Auckland'
 title = 'Visual Garden'
 disableKinds = ["section"]
 pygmentsCodeFences = false

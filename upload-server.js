@@ -83,19 +83,16 @@ app.post('/api/upload-post', upload, async (req, res) => {
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
 
-        // Generate date in YYYY-MM-DD format (ensure it's not in the future)
+        const AUCKLAND_TZ = 'Pacific/Auckland';
         const now = new Date();
-        // Use local date to avoid timezone issues that create future dates
-        const dateStr = now.toISOString().split('T')[0];
-        // Create a timestamp that's guaranteed to be current/past for live sites
-        // Use start of current day in UTC to avoid timezone-related future date issues
-        const todayUTC = new Date();
-        todayUTC.setUTCHours(0, 0, 0, 0); // Set to start of day UTC
-        const timestamp = todayUTC.toISOString();
-        
-        console.log(`📅 Generated date: ${dateStr}`);
-        console.log(`📅 Generated timestamp: ${timestamp}`);
-        console.log(`📅 Current time: ${now.toISOString()}`);
+        const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: AUCKLAND_TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+        const dateStr = formatter.format(now);
+        const tzStr = now.toLocaleString('en', { timeZone: AUCKLAND_TZ, timeZoneName: 'shortOffset' });
+        const offsetMatch = tzStr.match(/GMT([+-])(\d{1,2})/);
+        const offset = offsetMatch ? (offsetMatch[1] + offsetMatch[2].padStart(2, '0') + ':00') : '+13:00';
+        const timestamp = `${dateStr}T12:00:00${offset}`;
+
+        console.log(`📅 Auckland date: ${dateStr}, timestamp: ${timestamp}`);
 
         // Create post directory
         const postDir = path.join('content', 'post', `${dateStr}-${slug}`);
