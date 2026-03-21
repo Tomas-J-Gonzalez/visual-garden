@@ -3,6 +3,8 @@
 \*------------------------------------*/
 
 html {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	font-feature-settings: "calt", "liga", "hist", "onum", "pnum";
 	font-size: var(--base-font-size);
 	line-height: var(--base-line-height);
@@ -10,7 +12,7 @@ html {
 
 body {
 	font-family: var(--font-system-rg);
-	font-weight: var(--font-weight-regular);
+	font-weight: var(--font-weight-medium);
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -44,16 +46,22 @@ h3,
 h4,
 h5,
 h6 {
+	text-wrap: balance;
 	color: var(--color-dark);
-	font-weight: var(--font-weight-regular);
+	font-weight: var(--font-weight-medium);
 	line-height: 1.2;
 }
 
 p,
 p+p {
+	text-wrap: pretty;
 	color: var(--color-dark);
 	margin-top: var(--base-margin);
 	max-width: 56ch;
+}
+
+time {
+	font-variant-numeric: tabular-nums;
 }
 
 /* Hide focus styles if they're not needed, for example, 

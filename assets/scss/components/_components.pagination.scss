@@ -6,4 +6,8 @@
 	display: flex;
 	gap: 1rem;
 	margin-top: 3rem;
+
+	.Pagination-itemLink {
+		font-variant-numeric: tabular-nums;
+	}
 }

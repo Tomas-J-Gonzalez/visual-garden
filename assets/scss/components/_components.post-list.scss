@@ -7,7 +7,11 @@
 }
 
 .PostList-item {
- position: relative;
+	position: relative;
+}
+
+.PostList-item img {
+	outline: none;
 }
 
 .PostList-itemTitle {
@@ -15,9 +19,16 @@
 }
 
 .PostList-itemLink {
- display: block;
+	display: block;
+	transition-property: transform;
+	transition-duration: 150ms;
+	transition-timing-function: ease-out;
 
- // See Heydon’s pseudo-content trick: https://inclusive-components.design/cards/#thepseudocontenttrick and https://heydon.github.io/inclusive-components-demos/cards-pseudo-content/
+	&:active {
+		transform: scale(0.96);
+	}
+
+	// See Heydon’s pseudo-content trick: https://inclusive-components.design/cards/#thepseudocontenttrick and https://heydon.github.io/inclusive-components-demos/cards-pseudo-content/
  &::after {
   content: '';
   position: absolute;
