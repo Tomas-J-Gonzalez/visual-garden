@@ -118,11 +118,11 @@
 {{ define "footer" }}
 {{ $pages := where .Site.RegularPages "Type" "post" }}
 <footer class="flex justify-between gap10">
-  <div class="flex flex-wrap">
+  <div class="Lightbox-footerMeta">
     <time datetime="{{ .Date }}">{{ .Date.Format "2006-01-02" }}</time>
     {{ $terms := (.GetTerms "tags") }}
     {{ with $terms }}<span>–</span>{{ end }}
-    <ul class="flex gap10">
+    <ul class="Lightbox-footerTags">
       {{ range $key, $value := $terms }}
         <li>
           <a href="{{ .Permalink }}">

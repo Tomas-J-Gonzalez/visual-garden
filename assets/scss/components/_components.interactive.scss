@@ -4,9 +4,9 @@
 \*------------------------------------*/
 
 header a,
-footer a,
+footer a:not(ul a),
 .Pagination-itemLink,
-.Lightbox footer a {
+.Lightbox footer .flex.items-end a {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -19,9 +19,9 @@ footer a,
 }
 
 header a:active,
-footer a:active,
+footer a:not(ul a):active,
 .Pagination-itemLink:active,
-.Lightbox footer a:active {
+.Lightbox footer .flex.items-end a:active {
 	transform: scale(0.96);
 }
 

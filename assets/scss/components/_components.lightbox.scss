@@ -9,6 +9,36 @@
 	position: relative;
 }
 
+.Lightbox-footerMeta {
+	font-size: 1rem;
+	line-height: 1.5;
+	white-space: normal;
+
+	time,
+	span,
+	.Lightbox-footerTags {
+		display: inline;
+		vertical-align: baseline;
+	}
+
+	.Lightbox-footerTags {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.Lightbox-footerTags li {
+		display: inline;
+		margin: 0;
+		padding: 0;
+	}
+
+	.Lightbox-footerTags a {
+		font-size: inherit;
+		line-height: inherit;
+	}
+}
+
 .Lightbox-inner {
 	height: 80vh;
 	width: 80vh;
