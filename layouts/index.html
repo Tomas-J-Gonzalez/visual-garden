@@ -4,15 +4,16 @@
     {{ $all := where .Site.RegularPages "Type" "post" }}
     {{ $sorted := sort $all "Date" "desc" }}
     {{ $paginator := .Paginate $sorted 40 }}
-    {{ range $paginator.Pages }}
+    {{ range $i, $page := $paginator.Pages }}
       <li class="PostList-item">
 
-        {{ $image_alt := .Params.image_alt }}
+        {{ $image_alt := $page.Params.image_alt }}
+        {{ $loading := cond (lt $i 8) "eager" "lazy" }}
         
-        {{ if isset .Params "image" }}
+        {{ if isset $page.Params "image" }}
           
-          {{ $image := .Params.image }}
-          {{ $image_ratio := .Params.image_ratio }}
+          {{ $image := $page.Params.image }}
+          {{ $image_ratio := $page.Params.image_ratio }}
           {{ $cloudinary_url := .Site.Params.cloudinary_url }}
           {{ $base := "/images/" }}
           {{ if hugo.IsServer }}
@@ -49,7 +50,7 @@
                 {{ else }}
                   alt=""
                 {{ end }} 
-                loading="lazy"
+                loading="{{ $loading }}"
                 decoding="async"
                 style="background-size: cover; background-image: url('{{ $base }}f_auto/q_1/w_5/{{ . }}'); width: 100%;
                 height: 100%;" 
@@ -68,7 +69,7 @@
           </picture>
         {{ else }}
 
-          {{ with .Resources.GetMatch "{*.*,*.jpg,*.png,*.jpeg}" }}
+          {{ with $page.Resources.GetMatch "{*.*,*.jpg,*.png,*.jpeg}" }}
             {{- $src := . -}}
             {{- $sizes := "(min-width: 768px) 25vw, 100vw" -}}
             {{- $LQIP_img := $src.Resize "20x jpg" -}}
@@ -101,7 +102,7 @@
                   alt="{{ $image_alt }}"
                   width="{{ $src.Width }}"
                   height="{{ $src.Height }}"
-                  loading="lazy"
+                  loading="{{ $loading }}"
                   decoding="async"
                   />
               </picture>
@@ -111,7 +112,7 @@
         {{ end }}
         
         <h2 class="PostList-itemTitle">
-          <a class="PostList-itemLink" href="{{ .Permalink }}">{{ .Title }}{{ with .Params.video_url }} <span class="VideoIcon" aria-hidden="true">▶︎</span><span class="visually-hidden"> video</span>{{ end }}</a>
+          <a class="PostList-itemLink" href="{{ $page.Permalink }}">{{ $page.Title }}{{ with $page.Params.video_url }} <span class="VideoIcon" aria-hidden="true">▶︎</span><span class="visually-hidden"> video</span>{{ end }}</a>
         </h2>
       </li>
     {{ end }}

@@ -12,6 +12,18 @@ require('dotenv').config();
 const app = express();
 const PORT = 3001;
 
+function sanitizeFilename(originalName) {
+    const ext = path.extname(originalName).toLowerCase();
+    const base = path.basename(originalName, path.extname(originalName))
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        .toLowerCase();
+    return `${base || 'image'}${ext}`;
+}
+
 // Configure Cloudinary (you'll need to set these environment variables)
 cloudinary.config({
     cloud_name: 'tomasgo',
@@ -98,16 +110,14 @@ app.post('/api/upload-post', upload, async (req, res) => {
         const postDir = path.join('content', 'post', `${dateStr}-${slug}`);
         await fs.mkdir(postDir, { recursive: true });
 
-        // Move uploaded file to post directory
-        const originalName = req.file.originalname;
-        const extension = path.extname(originalName);
-        const imagePath = path.join(postDir, originalName);
+        const safeName = sanitizeFilename(req.file.originalname);
+        const extension = path.extname(safeName);
+        const imagePath = path.join(postDir, safeName);
         await fs.rename(req.file.path, imagePath);
 
-        // Upload to Cloudinary using API (no CLI needed)
-        const baseName = path.parse(originalName).name; // Remove extension
+        const baseName = path.parse(safeName).name;
         const cloudinaryPath = `post/${dateStr}-${slug}/${baseName}`;
-        console.log(`📁 Original filename: ${originalName}`);
+        console.log(`📁 Safe filename: ${safeName}`);
         console.log(`📁 Base name (no extension): ${baseName}`);
         console.log(`📁 Cloudinary public_id: ${cloudinaryPath}`);
         const uploadResult = await uploadToCloudinaryAPI(imagePath, cloudinaryPath);

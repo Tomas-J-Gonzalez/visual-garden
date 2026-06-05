@@ -3,707 +3,929 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Garden - Upload New Post</title>
+    <title>Visual Garden — CMS</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #f7f7f5;
+            --surface: #fff;
+            --text: #222;
+            --text-muted: #666;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.06);
+            --brand: #1a4632;
+            --brand-hover: #143528;
+            --danger: #b42318;
+            --danger-bg: #fef3f2;
+            --success: #067647;
+            --success-bg: #ecfdf3;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: #ececec;
-            line-height: 1.6;
-            padding: 2rem;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 700px;
+        .app {
+            max-width: 960px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 16px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            padding: 1.5rem 1.25rem 3rem;
         }
 
-        h1 {
-            margin-bottom: 0.5rem;
-            color: #fff;
-            font-size: 2.5rem;
-            font-weight: 300;
-            text-align: center;
-            background: linear-gradient(135deg, #fff 0%, #ccc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 2rem;
-            font-size: 1rem;
-        }
-
-        .upload-area {
-            border: 2px dashed #444;
-            border-radius: 12px;
-            padding: 2.5rem 1.5rem;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.03);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.6s;
-        }
-
-        .upload-area:hover::before {
-            left: 100%;
-        }
-
-        .upload-area.dragover {
-            border-color: #007acc;
-            background: rgba(0, 122, 204, 0.1);
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(0, 122, 204, 0.3);
-        }
-
-        .upload-area.has-files {
-            border-color: #28a745;
-            background: rgba(40, 167, 69, 0.1);
-            box-shadow: 0 0 20px rgba(40, 167, 69, 0.2);
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.8;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-            transition: all 0.3s ease;
-        }
-
-        .upload-area:hover .upload-icon {
-            transform: scale(1.1);
-            opacity: 1;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #ddd;
-            font-size: 0.95rem;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #ececec;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #007acc;
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.2);
-            transform: translateY(-1px);
-        }
-
-        input:hover, textarea:hover, select:hover {
-            border-color: #666;
-            background: rgba(255, 255, 255, 0.07);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .tags-input {
+        .header {
             display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .tag {
-            background: #555;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .tag-remove {
-            cursor: pointer;
-            color: #ff6b6b;
-        }
-
-        .preview-area {
-            margin-top: 1rem;
-            text-align: center;
-        }
-
-        .preview-image {
-            max-width: 300px;
-            max-height: 300px;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #007acc 0%, #005a9e 100%);
-            color: white;
-            border: none;
-            padding: 1.25rem 2.5rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-right: 1rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 122, 204, 0.3);
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 122, 204, 0.4);
-            background: linear-gradient(135deg, #0088dd 0%, #0066bb 100%);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: #555;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #666 0%, #444 100%);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #777 0%, #555 100%);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .progress {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            display: none;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .progress-steps {
-            display: flex;
+            align-items: baseline;
             justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .step {
-            flex: 1;
-            padding: 0.5rem;
-            border-radius: 6px;
-            color: #666;
-            transition: all 0.3s ease;
-        }
-
-        .step.active {
-            background: rgba(0, 122, 204, 0.2);
-            color: #007acc;
-        }
-
-        .step.completed {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28a745;
-        }
-
-        .progress-bar {
-            background: linear-gradient(90deg, #007acc 0%, #00aaff 100%);
-            height: 8px;
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            margin-top: 1rem;
-            box-shadow: 0 0 10px rgba(0, 122, 204, 0.5);
-        }
-
-        .status {
-            margin-top: 1.5rem;
-            padding: 1.25rem;
-            border-radius: 12px;
-            display: none;
-            text-align: center;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        .status.success {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid rgba(40, 167, 69, 0.5);
-            color: #90ee90;
-            box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
-        }
-
-        .status.error {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid rgba(220, 53, 69, 0.5);
-            color: #ff6b6b;
-            box-shadow: 0 0 20px rgba(220, 53, 69, 0.3);
-        }
-
-        .file-list {
-            margin-top: 1.5rem;
-        }
-
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            margin-bottom: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
-
-        .file-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-1px);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .tab-buttons {
-            display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            text-wrap: balance;
+        }
+
+        .header-links {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .header-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 150ms ease-out;
+        }
+
+        .header-links a:hover { color: var(--brand); }
+
+        .tabs {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+            width: fit-content;
         }
 
         .tab-btn {
-            background: transparent;
             border: none;
-            color: #888;
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            font-size: 1rem;
+            background: transparent;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
             font-weight: 500;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition-property: color, background, box-shadow;
+            transition-duration: 150ms;
+            transition-timing-function: ease-out;
+            min-height: 2.5rem;
         }
 
-        .tab-btn:hover {
-            color: #ccc;
-        }
+        .tab-btn:hover { color: var(--text); }
 
         .tab-btn.active {
-            color: #007acc;
-            border-bottom-color: #007acc;
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: var(--shadow);
         }
 
-        .tab-content {
-            display: none;
+        .tab-btn:active { transform: scale(0.96); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .upload-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.5rem;
+            align-items: start;
         }
 
-        .tab-content.active {
-            display: block;
+        .panel {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.25rem;
         }
 
-        .posts-list {
-            margin-top: 2rem;
-        }
-
-        .post-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
+        .panel-title {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
             margin-bottom: 1rem;
-            transition: all 0.3s ease;
         }
 
-        .post-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-2px);
+        .dropzone {
+            border: 1.5px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition-property: border-color, background, box-shadow;
+            transition-duration: 150ms;
+            transition-timing-function: ease-out;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        .post-header {
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: var(--brand);
+            background: rgba(26, 70, 50, 0.03);
+        }
+
+        .dropzone.has-file {
+            border-style: solid;
+            border-color: var(--brand);
+            padding: 0.75rem;
+        }
+
+        .dropzone-label {
+            font-size: 0.9375rem;
+            color: var(--text);
+        }
+
+        .dropzone-hint {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        .dropzone-hint strong {
+            color: var(--brand);
+            font-weight: 500;
+        }
+
+        .preview-wrap {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--bg);
+        }
+
+        .preview-wrap img {
+            display: block;
+            width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+        }
+
+        .preview-meta {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.8125rem;
+            color: var(--text-muted);
         }
 
-        .post-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+        .preview-meta span { font-variant-numeric: tabular-nums; }
+
+        .btn-ghost {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 0.8125rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: background 150ms ease-out;
+            min-height: 2.5rem;
+        }
+
+        .btn-ghost:hover { background: var(--danger-bg); }
+        .btn-ghost:active { transform: scale(0.96); }
+
+        .field { margin-bottom: 1.125rem; }
+
+        .field label {
+            display: block;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            margin-bottom: 0.375rem;
+            color: var(--text);
+        }
+
+        .field-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            color: var(--text);
+            font-size: 0.9375rem;
+            transition-property: border-color, box-shadow;
+            transition-duration: 150ms;
+            transition-timing-function: ease-out;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(26, 70, 50, 0.12);
+        }
+
+        .field input.invalid { border-color: var(--danger); }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag-chip {
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition-property: border-color, color, background;
+            transition-duration: 150ms;
+            transition-timing-function: ease-out;
+        }
+
+        .tag-chip:hover {
+            border-color: var(--brand);
+            color: var(--brand);
+            background: rgba(26, 70, 50, 0.05);
+        }
+
+        .tag-chip:active { transform: scale(0.96); }
+
+        .ratio-picker {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ratio-option {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition-property: border-color, color, background;
+            transition-duration: 150ms;
+            transition-timing-function: ease-out;
+            background: var(--surface);
+        }
+
+        .ratio-option:hover { border-color: var(--brand); }
+
+        .ratio-option.selected {
+            border-color: var(--brand);
+            color: var(--brand);
+            background: rgba(26, 70, 50, 0.05);
+        }
+
+        .ratio-icon {
+            display: block;
+            margin: 0 auto 0.25rem;
+            border: 1.5px solid currentColor;
+            border-radius: 2px;
+        }
+
+        .ratio-icon.auto { width: 20px; height: 16px; }
+        .ratio-icon.square { width: 16px; height: 16px; }
+        .ratio-icon.landscape { width: 20px; height: 14px; }
+        .ratio-icon.portrait { width: 14px; height: 20px; }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            cursor: pointer;
+            transition-property: background, box-shadow, transform;
+            transition-duration: 150ms;
+            transition-timing-function: ease-out;
+            min-height: 2.5rem;
+        }
+
+        .btn:active:not(:disabled) { transform: scale(0.96); }
+
+        .btn-primary {
+            background: var(--brand);
             color: #fff;
-            margin: 0;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--brand-hover);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary:hover { box-shadow: var(--shadow-hover); }
+
+        .progress-panel {
+            display: none;
+            margin-top: 1.25rem;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+        }
+
+        .progress-panel.visible { display: block; }
+
+        .progress-steps {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .progress-step {
+            flex: 1;
+            padding: 0.375rem 0.5rem;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            text-align: center;
+            transition: background 150ms ease-out, color 150ms ease-out;
+        }
+
+        .progress-step.active {
+            background: rgba(26, 70, 50, 0.08);
+            color: var(--brand);
+        }
+
+        .progress-step.done {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .progress-bar-track {
+            height: 4px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--brand);
+            border-radius: 2px;
+            transition: width 300ms ease-out;
+            width: 0%;
+        }
+
+        .progress-label {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .manage-toolbar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(26, 70, 50, 0.12);
+        }
+
+        .post-count {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .posts-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .post-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: box-shadow 150ms ease-out;
+        }
+
+        .post-card:hover { box-shadow: var(--shadow-hover); }
+
+        .post-card-inner {
+            display: grid;
+            grid-template-columns: 72px 1fr auto;
+            gap: 1rem;
+            padding: 1rem;
+            align-items: start;
+        }
+
+        .post-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            background: var(--bg);
+        }
+
+        .post-thumb-placeholder {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .post-info h3 {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            text-wrap: balance;
+        }
+
+        .post-meta-line {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .post-tags-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .post-tag {
+            font-size: 0.6875rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 999px;
+            background: rgba(26, 70, 50, 0.08);
+            color: var(--brand);
         }
 
         .post-actions {
             display: flex;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 0.375rem;
         }
 
-        .action-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
+        .btn-sm {
+            font-size: 0.75rem;
+            padding: 0.375rem 0.625rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
             cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            transition-property: border-color, background, transform;
+            transition-duration: 150ms;
+            transition-timing-function: ease-out;
+            min-height: 2.5rem;
+            white-space: nowrap;
         }
 
-        .edit-btn {
-            background: rgba(0, 122, 204, 0.2);
-            color: #007acc;
-            border: 1px solid rgba(0, 122, 204, 0.3);
+        .btn-sm:hover { border-color: var(--brand); color: var(--brand); }
+        .btn-sm:active { transform: scale(0.96); }
+
+        .btn-sm.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: var(--danger-bg);
         }
 
-        .edit-btn:hover {
-            background: rgba(0, 122, 204, 0.3);
-        }
-
-        .delete-btn {
-            background: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-
-        .delete-btn:hover {
-            background: rgba(220, 53, 69, 0.3);
-        }
-
-        .post-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            font-size: 0.9rem;
-            color: #888;
-        }
-
-        .post-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .tag {
-            background: rgba(0, 122, 204, 0.2);
-            color: #007acc;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        .edit-form {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-top: 1rem;
+        .edit-panel {
             display: none;
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg);
         }
 
-        .edit-form.active {
-            display: block;
+        .edit-panel.open { display: block; }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.9375rem;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
+        .empty-state p { margin-top: 0.5rem; font-size: 0.8125rem; }
 
-        .loading {
+        .loading-state {
             text-align: center;
             padding: 2rem;
-            color: #888;
+            color: var(--text-muted);
+            font-size: 0.875rem;
         }
 
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 360px;
+        }
+
+        .toast {
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            box-shadow: var(--shadow-hover);
+            animation: toast-in 200ms ease-out;
+        }
+
+        .toast.success { background: var(--success-bg); color: var(--success); }
+        .toast.error { background: var(--danger-bg); color: var(--danger); }
+
+        .toast a { color: inherit; font-weight: 500; }
+
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 720px) {
+            .upload-layout { grid-template-columns: 1fr; }
+            .field-row { grid-template-columns: 1fr; }
+            .post-card-inner { grid-template-columns: 56px 1fr; }
+            .post-actions {
+                grid-column: 1 / -1;
+                flex-direction: row;
             }
-            
-            .container {
-                padding: 2rem 1.5rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .upload-area {
-                padding: 2rem 1rem;
-            }
-            
-            .btn {
-                width: 100%;
-                margin-bottom: 1rem;
-                margin-right: 0;
-            }
+            .actions { flex-direction: column; }
+            .actions .btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Visual Garden Manager</h1>
-        <p class="subtitle">Manage your <a href="https://garden.tomasjgonzalez.com/" target="_blank" style="color: #007acc; text-decoration: underline;">Visual Garden</a></p>
-        
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="showTab('upload')">📸 Upload New</button>
-            <button class="tab-btn" onclick="showTab('manage')">📋 Manage Posts</button>
+    <div class="app">
+        <header class="header">
+            <h1>Visual Garden</h1>
+            <nav class="header-links">
+                <a href="https://garden.tomasjgonzalez.com/" target="_blank" rel="noopener">Live site</a>
+                <a href="http://localhost:1313/" target="_blank" rel="noopener">Local preview</a>
+            </nav>
+        </header>
+
+        <div class="tabs" role="tablist">
+            <button class="tab-btn active" role="tab" aria-selected="true" data-tab="upload">New post</button>
+            <button class="tab-btn" role="tab" aria-selected="false" data-tab="manage">Manage <span id="postCountBadge"></span></button>
         </div>
-        
-        <div id="uploadTab" class="tab-content active">
+
+        <div id="uploadPanel" class="tab-panel active" role="tabpanel">
             <form id="uploadForm">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📸</div>
-                <h3 style="margin-bottom: 0.5rem; color: #ddd; font-weight: 400;">Drop your image here</h3>
-                <p style="color: #888; margin-bottom: 0;">or <label for="imageInput" style="color: #007acc; cursor: pointer; text-decoration: underline; font-weight: 500;">browse files</label></p>
-                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                <div class="upload-layout">
+                    <div class="panel">
+                        <p class="panel-title">Image</p>
+                        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload image">
+                            <div id="dropzoneEmpty">
+                                <p class="dropzone-label">Drop an image here</p>
+                                <p class="dropzone-hint">or <strong>browse</strong> · JPG, PNG, WebP · max 50 MB</p>
+                            </div>
+                            <div id="dropzonePreview" class="hidden">
+                                <div class="preview-wrap">
+                                    <img id="previewImg" alt="Preview">
+                                </div>
+                                <div class="preview-meta">
+                                    <span id="previewName"></span>
+                                    <button type="button" class="btn-ghost" id="removeFile">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="file" id="imageInput" accept="image/*" class="hidden">
+                    </div>
+
+                    <div class="panel">
+                        <p class="panel-title">Details</p>
+
+                        <div class="field">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" required placeholder="Post title" autocomplete="off">
+                        </div>
+
+                        <div class="field">
+                            <label for="imageAlt">Alt text</label>
+                            <input type="text" id="imageAlt" required placeholder="Describe the image" autocomplete="off">
+                            <p class="field-hint">Used for accessibility and SEO</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="tags">Tags</label>
+                            <input type="text" id="tags" placeholder="inspiration, design, game">
+                            <div class="tag-suggestions" id="tagSuggestions"></div>
+                        </div>
+
+                        <div class="field">
+                            <label>Image ratio</label>
+                            <input type="hidden" id="imageRatio" value="">
+                            <div class="ratio-picker" id="ratioPicker">
+                                <button type="button" class="ratio-option selected" data-ratio="">
+                                    <span class="ratio-icon auto"></span>Auto
+                                </button>
+                                <button type="button" class="ratio-option" data-ratio="square">
+                                    <span class="ratio-icon square"></span>Square
+                                </button>
+                                <button type="button" class="ratio-option" data-ratio="landscape">
+                                    <span class="ratio-icon landscape"></span>Landscape
+                                </button>
+                                <button type="button" class="ratio-option" data-ratio="portrait">
+                                    <span class="ratio-icon portrait"></span>Portrait
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="videoUrl">Video URL <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+                            <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=…">
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn btn-primary" id="uploadBtn" disabled>Publish post</button>
+                            <button type="button" class="btn btn-secondary" id="clearBtn">Clear</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="progress-panel" id="progress">
+                <div class="progress-steps">
+                    <div class="progress-step" data-step="1">Prepare</div>
+                    <div class="progress-step" data-step="2">Upload</div>
+                    <div class="progress-step" data-step="3">Create</div>
+                    <div class="progress-step" data-step="4">Done</div>
+                </div>
+                <div class="progress-bar-track">
+                    <div class="progress-bar-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-label" id="progressLabel">Starting…</p>
             </div>
-
-            <div class="file-list" id="fileList"></div>
-
-            <div class="preview-area" id="previewArea"></div>
-
-            <div class="form-group">
-                <label for="title">Post Title *</label>
-                <input type="text" id="title" required>
-            </div>
-
-            <div class="form-group">
-                <label for="imageAlt">Image Alt Text *</label>
-                <input type="text" id="imageAlt" required>
-            </div>
-
-            <div class="form-group">
-                <label for="tags">Tags (comma-separated)</label>
-                <input type="text" id="tags" placeholder="e.g., inspiration, design, minimalism">
-            </div>
-
-            <div class="form-group">
-                <label for="imageRatio">Image Ratio</label>
-                <select id="imageRatio">
-                    <option value="">Auto</option>
-                    <option value="square">Square</option>
-                    <option value="landscape">Landscape</option>
-                    <option value="portrait">Portrait</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="videoUrl">Video URL (optional)</label>
-                <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=...">
-            </div>
-
-            <button type="submit" class="btn" id="uploadBtn">Upload & Create Post</button>
-            <button type="button" class="btn btn-secondary" id="clearBtn">Clear Form</button>
-        </form>
-
-        <div class="progress hidden" id="progress">
-            <div class="progress-steps">
-                <div class="step" id="step1">📁 Preparing</div>
-                <div class="step" id="step2">☁️ Uploading</div>
-                <div class="step" id="step3">📝 Creating Post</div>
-                <div class="step" id="step4">✅ Complete</div>
-            </div>
-            <p id="progressText">Starting upload...</p>
-            <div class="progress-bar" style="width: 0%"></div>
         </div>
 
-        <div class="status hidden" id="status"></div>
-        </div>
-
-        <div id="manageTab" class="tab-content">
-            <div class="posts-list" id="postsList">
-                <div class="loading">Loading posts...</div>
+        <div id="managePanel" class="tab-panel" role="tabpanel">
+            <div class="manage-toolbar">
+                <input type="search" class="search-input" id="searchPosts" placeholder="Search posts…" aria-label="Search posts">
+                <span class="post-count" id="postCount"></span>
+            </div>
+            <div class="posts-grid" id="postsList">
+                <div class="loading-state">Loading posts…</div>
             </div>
         </div>
     </div>
 
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
     <script>
-        const uploadArea = document.getElementById('uploadArea');
+        const CLOUDINARY_BASE = 'https://res.cloudinary.com/tomasgo/image/upload/f_auto/q_60/w_144/';
+        const SUGGESTED_TAGS = ['inspiration', 'design', 'game', 'music', 'people', 'nostalgia', 'book', 'art'];
+        const dropzone = document.getElementById('dropzone');
         const imageInput = document.getElementById('imageInput');
-        const fileList = document.getElementById('fileList');
-        const previewArea = document.getElementById('previewArea');
         const uploadForm = document.getElementById('uploadForm');
-        const progress = document.getElementById('progress');
-        const status = document.getElementById('status');
         const uploadBtn = document.getElementById('uploadBtn');
         const clearBtn = document.getElementById('clearBtn');
+        const progress = document.getElementById('progress');
+        const progressFill = document.getElementById('progressFill');
+        const progressLabel = document.getElementById('progressLabel');
+        const postsList = document.getElementById('postsList');
+        const searchPosts = document.getElementById('searchPosts');
 
         let selectedFile = null;
+        let allPosts = [];
 
-        // Drag and drop functionality
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            
-            const files = Array.from(e.dataTransfer.files);
-            handleFiles(files);
-        });
-
-        imageInput.addEventListener('change', (e) => {
-            handleFiles(Array.from(e.target.files));
-        });
-
-        function handleFiles(files) {
-            const imageFiles = files.filter(file => file.type.startsWith('image/'));
-            
-            if (imageFiles.length === 0) {
-                alert('Please select only image files.');
-                return;
-            }
-
-            if (imageFiles.length > 1) {
-                alert('Please select only one image at a time.');
-                return;
-            }
-
-            selectedFile = imageFiles[0];
-            displayFile(selectedFile);
-            updateFormFromFilename(selectedFile);
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
         }
 
-        function displayFile(file) {
-            uploadArea.classList.add('has-files');
-            
-            fileList.innerHTML = `
-                <div class="file-item">
-                    <span>📷 ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                    <button type="button" onclick="clearFile()" style="background: #dc3545; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer;">Remove</button>
-                </div>
-            `;
+        function toast(message, type = 'success', duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = message;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), duration);
+        }
 
-            // Create preview
+        function initTagSuggestions() {
+            const container = document.getElementById('tagSuggestions');
+            const tagsInput = document.getElementById('tags');
+            container.innerHTML = SUGGESTED_TAGS.map(tag =>
+                `<button type="button" class="tag-chip" data-tag="${tag}">${tag}</button>`
+            ).join('');
+            container.addEventListener('click', (e) => {
+                const chip = e.target.closest('.tag-chip');
+                if (!chip) return;
+                const tag = chip.dataset.tag;
+                const current = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+                if (!current.includes(tag)) {
+                    current.push(tag);
+                    tagsInput.value = current.join(', ');
+                }
+            });
+        }
+
+        function initRatioPicker() {
+            const picker = document.getElementById('ratioPicker');
+            const hidden = document.getElementById('imageRatio');
+            picker.addEventListener('click', (e) => {
+                const btn = e.target.closest('.ratio-option');
+                if (!btn) return;
+                picker.querySelectorAll('.ratio-option').forEach(o => o.classList.remove('selected'));
+                btn.classList.add('selected');
+                hidden.value = btn.dataset.ratio;
+            });
+        }
+
+        function setFile(file) {
+            if (!file?.type.startsWith('image/')) {
+                toast('Please select an image file.', 'error');
+                return;
+            }
+            if (file.size > 50 * 1024 * 1024) {
+                toast('Image must be under 50 MB.', 'error');
+                return;
+            }
+
+            selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
-                previewArea.innerHTML = `
-                    <img src="${e.target.result}" alt="Preview" class="preview-image">
-                `;
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('previewName').textContent =
+                    `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)} MB`;
+                document.getElementById('dropzoneEmpty').classList.add('hidden');
+                document.getElementById('dropzonePreview').classList.remove('hidden');
+                dropzone.classList.add('has-file');
             };
             reader.readAsDataURL(file);
-        }
 
-        function updateFormFromFilename(file) {
-            const name = file.name.replace(/\.[^/.]+$/, ''); // Remove extension
-            const slugified = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-            
-            document.getElementById('title').value = name.replace(/[-_]/g, ' ');
-            document.getElementById('imageAlt').value = name.replace(/[-_]/g, ' ');
-            
-            // Auto-suggest tags based on filename
-            const suggestedTags = [];
-            if (name.toLowerCase().includes('abstract')) suggestedTags.push('abstract');
-            if (name.toLowerCase().includes('design')) suggestedTags.push('design');
-            if (name.toLowerCase().includes('minimal')) suggestedTags.push('minimalism');
-            if (name.toLowerCase().includes('type')) suggestedTags.push('typography');
-            if (name.toLowerCase().includes('art')) suggestedTags.push('art');
-            if (suggestedTags.length > 0) {
-                document.getElementById('tags').value = suggestedTags.join(', ');
-            }
+            const name = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+            if (!document.getElementById('title').value) document.getElementById('title').value = name;
+            if (!document.getElementById('imageAlt').value) document.getElementById('imageAlt').value = name;
+            validateForm();
         }
 
         function clearFile() {
             selectedFile = null;
-            uploadArea.classList.remove('has-files');
-            fileList.innerHTML = '';
-            previewArea.innerHTML = '';
             imageInput.value = '';
+            document.getElementById('dropzoneEmpty').classList.remove('hidden');
+            document.getElementById('dropzonePreview').classList.add('hidden');
+            dropzone.classList.remove('has-file');
+            validateForm();
         }
+
+        function validateForm() {
+            const title = document.getElementById('title').value.trim();
+            const alt = document.getElementById('imageAlt').value.trim();
+            uploadBtn.disabled = !(selectedFile && title && alt);
+        }
+
+        dropzone.addEventListener('click', () => imageInput.click());
+        dropzone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); imageInput.click(); }
+        });
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) setFile(file);
+        });
+        imageInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) setFile(e.target.files[0]);
+        });
+        document.getElementById('removeFile').addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearFile();
+        });
+        document.getElementById('title').addEventListener('input', validateForm);
+        document.getElementById('imageAlt').addEventListener('input', validateForm);
 
         clearBtn.addEventListener('click', () => {
             clearFile();
             uploadForm.reset();
-            hideStatus();
+            document.getElementById('imageRatio').value = '';
+            document.querySelectorAll('.ratio-option').forEach((o, i) => {
+                o.classList.toggle('selected', i === 0);
+            });
+            validateForm();
         });
+
+        function showProgress() {
+            progress.classList.add('visible');
+            progressFill.style.width = '0%';
+            document.querySelectorAll('.progress-step').forEach(s => {
+                s.classList.remove('active', 'done');
+            });
+        }
+
+        function updateProgress(step, label) {
+            progressLabel.textContent = label;
+            progressFill.style.width = `${(step / 4) * 100}%`;
+            document.querySelectorAll('.progress-step').forEach(s => {
+                const n = parseInt(s.dataset.step, 10);
+                s.classList.toggle('done', n < step);
+                s.classList.toggle('active', n === step);
+            });
+        }
+
+        function hideProgress() {
+            progress.classList.remove('visible');
+        }
 
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if (!selectedFile) {
-                alert('Please select an image file.');
-                return;
-            }
+            if (!selectedFile) return;
 
             const formData = new FormData();
             formData.append('image', selectedFile);
-            formData.append('title', document.getElementById('title').value);
-            formData.append('imageAlt', document.getElementById('imageAlt').value);
+            formData.append('title', document.getElementById('title').value.trim());
+            formData.append('imageAlt', document.getElementById('imageAlt').value.trim());
             formData.append('tags', document.getElementById('tags').value);
             formData.append('imageRatio', document.getElementById('imageRatio').value);
             formData.append('videoUrl', document.getElementById('videoUrl').value);
@@ -711,261 +933,211 @@
             try {
                 showProgress();
                 uploadBtn.disabled = true;
+                updateProgress(1, 'Preparing file…');
+                await new Promise(r => setTimeout(r, 300));
+                updateProgress(2, 'Uploading to Cloudinary…');
 
-                // Simulate progress steps
-                updateProgressStep(1, 'Preparing file for upload...');
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                updateProgressStep(2, 'Uploading to Cloudinary...');
-                
-                const response = await fetch('/api/upload-post', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const response = await fetch('/api/upload-post', { method: 'POST', body: formData });
                 const result = await response.json();
 
                 if (response.ok) {
-                    updateProgressStep(3, 'Creating Hugo post...');
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                    
-             updateProgressStep(4, 'Upload complete!');
-             await new Promise(resolve => setTimeout(resolve, 500));
-             
-             showStatus('success', `✅ Post created successfully!<br>📁 Location: ${result.slug}<br>☁️ Cloudinary: ${result.cloudinaryPath}<br>🚀 ${result.gitStatus || 'Committed to GitHub'}<br><br><a href="https://garden.tomasjgonzalez.com/${result.slug}/" target="_blank" style="color: #90ee90; text-decoration: underline;">🌐 View on your live site →</a>`);
-                    uploadForm.reset();
-                    clearFile();
+                    updateProgress(3, 'Creating post…');
+                    await new Promise(r => setTimeout(r, 200));
+                    updateProgress(4, 'Done');
+                    toast(`Post published. <a href="https://garden.tomasjgonzalez.com/${result.slug}/" target="_blank" rel="noopener">View live →</a>`);
+                    clearBtn.click();
+                    loadPosts();
                 } else {
-                    showStatus('error', `❌ Upload failed: ${result.error}`);
+                    toast(escapeHtml(result.error || 'Upload failed'), 'error', 8000);
                 }
-            } catch (error) {
-                showStatus('error', `❌ Network error: ${error.message}`);
+            } catch (err) {
+                toast(escapeHtml(err.message), 'error', 8000);
             } finally {
                 hideProgress();
-                uploadBtn.disabled = false;
+                validateForm();
             }
         });
 
-        function showProgress() {
-            progress.classList.remove('hidden');
-            status.classList.add('hidden');
-            // Reset all steps
-            document.querySelectorAll('.step').forEach(step => {
-                step.classList.remove('active', 'completed');
-            });
-            document.querySelector('.progress-bar').style.width = '0%';
-            document.getElementById('progressText').textContent = 'Starting upload...';
-        }
-
-        function updateProgressStep(stepNumber, message) {
-            // Update progress text
-            document.getElementById('progressText').textContent = message;
-            
-            // Update progress bar
-            const percentage = (stepNumber / 4) * 100;
-            document.querySelector('.progress-bar').style.width = `${percentage}%`;
-            
-            // Update steps
-            for (let i = 1; i <= stepNumber; i++) {
-                const step = document.getElementById(`step${i}`);
-                if (i < stepNumber) {
-                    step.classList.add('completed');
-                    step.classList.remove('active');
-                } else {
-                    step.classList.add('active');
-                    step.classList.remove('completed');
-                }
-            }
-        }
-
-        function hideProgress() {
-            progress.classList.add('hidden');
-        }
-
-        function showStatus(type, message) {
-            status.innerHTML = message;
-            status.className = `status ${type}`;
-            status.classList.remove('hidden');
-        }
-
-        function hideStatus() {
-            status.classList.add('hidden');
-        }
-
-        // Tab switching functionality
-        function showTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Remove active class from all tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName + 'Tab').classList.add('active');
-            
-            // Add active class to clicked button
-            event.target.classList.add('active');
-            
-            // Load posts if manage tab is selected
-            if (tabName === 'manage') {
-                loadPosts();
-            }
-        }
-
-        // Load and display all posts
-        async function loadPosts() {
-            try {
-                const response = await fetch('/api/posts');
-                const data = await response.json();
-                
-                const postsList = document.getElementById('postsList');
-                
-                if (data.posts && data.posts.length > 0) {
-                    postsList.innerHTML = data.posts.map(post => `
-                        <div class="post-item" id="post-${post.slug}">
-                            <div class="post-header">
-                                <h3 class="post-title">${post.title}</h3>
-                                <div class="post-actions">
-                                    <button class="action-btn edit-btn" onclick="editPost('${post.slug}')">✏️ Edit</button>
-                                    <button class="action-btn delete-btn" onclick="deletePost('${post.slug}', '${post.title}')">🗑️ Delete</button>
-                                </div>
-                            </div>
-                            <div class="post-meta">
-                                <div><strong>Date:</strong> ${new Date(post.date).toLocaleDateString()}</div>
-                                <div><strong>Slug:</strong> ${post.slug}</div>
-                                <div><strong>Image Alt:</strong> ${post.image_alt || 'Not set'}</div>
-                                ${post.video_url ? `<div><strong>Video:</strong> <a href="${post.video_url}" target="_blank">Link</a></div>` : ''}
-                            </div>
-                            ${post.tags.length > 0 ? `
-                                <div class="post-tags">
-                                    ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                                </div>
-                            ` : ''}
-                            <div class="edit-form" id="edit-form-${post.slug}">
-                                <h4>Edit Post</h4>
-                                <form onsubmit="updatePost('${post.slug}', event)">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label>Title</label>
-                                            <input type="text" name="title" value="${post.title}" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Image Alt Text</label>
-                                            <input type="text" name="imageAlt" value="${post.image_alt || ''}" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label>Tags (comma-separated)</label>
-                                            <input type="text" name="tags" value="${post.tags.join(', ')}">
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Image Ratio</label>
-                                            <select name="imageRatio">
-                                                <option value="" ${!post.image_ratio ? 'selected' : ''}>Auto</option>
-                                                <option value="square" ${post.image_ratio === 'square' ? 'selected' : ''}>Square</option>
-                                                <option value="landscape" ${post.image_ratio === 'landscape' ? 'selected' : ''}>Landscape</option>
-                                                <option value="portrait" ${post.image_ratio === 'portrait' ? 'selected' : ''}>Portrait</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Video URL (optional)</label>
-                                        <input type="url" name="videoUrl" value="${post.video_url || ''}">
-                                    </div>
-                                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                                        <button type="submit" class="btn">💾 Save Changes</button>
-                                        <button type="button" class="btn btn-secondary" onclick="cancelEdit('${post.slug}')">❌ Cancel</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    postsList.innerHTML = '<div class="loading">No posts found.</div>';
-                }
-            } catch (error) {
-                document.getElementById('postsList').innerHTML = `<div class="status error">Error loading posts: ${error.message}</div>`;
-            }
-        }
-
-        // Edit post functionality
-        function editPost(slug) {
-            // Hide all other edit forms
-            document.querySelectorAll('.edit-form').forEach(form => {
-                form.classList.remove('active');
-            });
-            
-            // Show edit form for this post
-            document.getElementById(`edit-form-${slug}`).classList.add('active');
-        }
-
-        // Cancel edit
-        function cancelEdit(slug) {
-            document.getElementById(`edit-form-${slug}`).classList.remove('active');
-        }
-
-        // Update post
-        async function updatePost(slug, event) {
-            event.preventDefault();
-            
-            const formData = new FormData(event.target);
-            const data = {
-                title: formData.get('title'),
-                imageAlt: formData.get('imageAlt'),
-                tags: formData.get('tags'),
-                imageRatio: formData.get('imageRatio'),
-                videoUrl: formData.get('videoUrl')
-            };
-            
-            try {
-                const response = await fetch(`/api/posts/${slug}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.toggle('active', b === btn);
+                    b.setAttribute('aria-selected', b === btn);
                 });
-                
-                if (response.ok) {
-                    showStatus('success', '✅ Post updated successfully!');
-                    cancelEdit(slug);
-                    loadPosts(); // Reload the posts list
-                } else {
-                    const error = await response.json();
-                    showStatus('error', `❌ Update failed: ${error.error}`);
-                }
-            } catch (error) {
-                showStatus('error', `❌ Network error: ${error.message}`);
-            }
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                document.getElementById(tab + 'Panel').classList.add('active');
+                if (tab === 'manage') loadPosts();
+            });
+        });
+
+        function thumbUrl(image) {
+            if (!image) return null;
+            return CLOUDINARY_BASE + image;
         }
 
-        // Delete post
-        async function deletePost(slug, title) {
-            if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+        function renderPosts(posts) {
+            const query = searchPosts.value.trim().toLowerCase();
+            const filtered = query
+                ? posts.filter(p =>
+                    p.title.toLowerCase().includes(query) ||
+                    p.slug.toLowerCase().includes(query) ||
+                    p.tags.some(t => t.toLowerCase().includes(query))
+                )
+                : posts;
+
+            document.getElementById('postCount').textContent =
+                filtered.length === posts.length
+                    ? `${posts.length} posts`
+                    : `${filtered.length} of ${posts.length}`;
+
+            if (filtered.length === 0) {
+                postsList.innerHTML = `<div class="empty-state">
+                    <strong>${query ? 'No matches' : 'No posts yet'}</strong>
+                    <p>${query ? 'Try a different search term.' : 'Upload your first image to get started.'}</p>
+                </div>`;
                 return;
             }
-            
+
+            postsList.innerHTML = filtered.map(post => {
+                const thumb = thumbUrl(post.image);
+                const date = post.date ? new Date(post.date).toLocaleDateString('en-NZ') : '—';
+                const tags = post.tags.map(t => `<span class="post-tag">${escapeHtml(t)}</span>`).join('');
+                return `
+                <article class="post-card" id="post-${escapeHtml(post.slug)}">
+                    <div class="post-card-inner">
+                        ${thumb
+                            ? `<img class="post-thumb" src="${thumb}" alt="" loading="lazy">`
+                            : `<div class="post-thumb-placeholder">No image</div>`}
+                        <div class="post-info">
+                            <h3>${escapeHtml(post.title)}</h3>
+                            <p class="post-meta-line">${date} · ${escapeHtml(post.slug)}</p>
+                            ${tags ? `<div class="post-tags-inline">${tags}</div>` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button type="button" class="btn-sm" data-action="edit" data-slug="${escapeHtml(post.slug)}">Edit</button>
+                            <button type="button" class="btn-sm danger" data-action="delete" data-slug="${escapeHtml(post.slug)}" data-title="${escapeHtml(post.title)}">Delete</button>
+                        </div>
+                    </div>
+                    <div class="edit-panel" id="edit-${escapeHtml(post.slug)}">
+                        <form data-slug="${escapeHtml(post.slug)}">
+                            <div class="field-row">
+                                <div class="field">
+                                    <label>Title</label>
+                                    <input type="text" name="title" value="${escapeHtml(post.title)}" required>
+                                </div>
+                                <div class="field">
+                                    <label>Alt text</label>
+                                    <input type="text" name="imageAlt" value="${escapeHtml(post.image_alt || '')}" required>
+                                </div>
+                            </div>
+                            <div class="field-row">
+                                <div class="field">
+                                    <label>Tags</label>
+                                    <input type="text" name="tags" value="${escapeHtml(post.tags.join(', '))}">
+                                </div>
+                                <div class="field">
+                                    <label>Image ratio</label>
+                                    <select name="imageRatio">
+                                        <option value="" ${!post.image_ratio ? 'selected' : ''}>Auto</option>
+                                        <option value="square" ${post.image_ratio === 'square' ? 'selected' : ''}>Square</option>
+                                        <option value="landscape" ${post.image_ratio === 'landscape' ? 'selected' : ''}>Landscape</option>
+                                        <option value="portrait" ${post.image_ratio === 'portrait' ? 'selected' : ''}>Portrait</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>Video URL</label>
+                                <input type="url" name="videoUrl" value="${escapeHtml(post.video_url || '')}">
+                            </div>
+                            <div class="actions" style="margin-top:1rem">
+                                <button type="submit" class="btn btn-primary">Save</button>
+                                <button type="button" class="btn btn-secondary" data-action="cancel" data-slug="${escapeHtml(post.slug)}">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </article>`;
+            }).join('');
+        }
+
+        async function loadPosts() {
+            postsList.innerHTML = '<div class="loading-state">Loading posts…</div>';
             try {
-                const response = await fetch(`/api/posts/${slug}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    showStatus('success', '✅ Post deleted successfully!');
-                    loadPosts(); // Reload the posts list
-                } else {
-                    const error = await response.json();
-                    showStatus('error', `❌ Delete failed: ${error.error}`);
-                }
-            } catch (error) {
-                showStatus('error', `❌ Network error: ${error.message}`);
+                const res = await fetch('/api/posts');
+                const data = await res.json();
+                allPosts = data.posts || [];
+                document.getElementById('postCountBadge').textContent =
+                    allPosts.length ? `(${allPosts.length})` : '';
+                renderPosts(allPosts);
+            } catch (err) {
+                postsList.innerHTML = `<div class="empty-state"><strong>Could not load posts</strong><p>${escapeHtml(err.message)}</p></div>`;
             }
         }
+
+        searchPosts.addEventListener('input', () => renderPosts(allPosts));
+
+        postsList.addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const { action, slug, title } = btn.dataset;
+
+            if (action === 'edit') {
+                document.querySelectorAll('.edit-panel').forEach(p => p.classList.remove('open'));
+                document.getElementById(`edit-${slug}`)?.classList.add('open');
+            } else if (action === 'cancel') {
+                document.getElementById(`edit-${slug}`)?.classList.remove('open');
+            } else if (action === 'delete') {
+                if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+                try {
+                    const res = await fetch(`/api/posts/${slug}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        toast('Post deleted.');
+                        loadPosts();
+                    } else {
+                        const err = await res.json();
+                        toast(escapeHtml(err.error || 'Delete failed'), 'error');
+                    }
+                } catch (err) {
+                    toast(escapeHtml(err.message), 'error');
+                }
+            }
+        });
+
+        postsList.addEventListener('submit', async (e) => {
+            const form = e.target.closest('form[data-slug]');
+            if (!form) return;
+            e.preventDefault();
+            const slug = form.dataset.slug;
+            const fd = new FormData(form);
+            try {
+                const res = await fetch(`/api/posts/${slug}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: fd.get('title'),
+                        imageAlt: fd.get('imageAlt'),
+                        tags: fd.get('tags'),
+                        imageRatio: fd.get('imageRatio'),
+                        videoUrl: fd.get('videoUrl')
+                    })
+                });
+                if (res.ok) {
+                    toast('Post updated.');
+                    document.getElementById(`edit-${slug}`)?.classList.remove('open');
+                    loadPosts();
+                } else {
+                    const err = await res.json();
+                    toast(escapeHtml(err.error || 'Update failed'), 'error');
+                }
+            } catch (err) {
+                toast(escapeHtml(err.message), 'error');
+            }
+        });
+
+        initTagSuggestions();
+        initRatioPicker();
+        validateForm();
+        loadPosts();
     </script>
 </body>
 </html>
