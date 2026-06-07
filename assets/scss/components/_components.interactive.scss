@@ -1,6 +1,6 @@
 /*------------------------------------*\
     #COMPONENTS: INTERACTIVE
-    Design principles: scale on press, 40×40px min hit area
+    Minimum 40×40px hit areas
 \*------------------------------------*/
 
 header a,
@@ -13,16 +13,6 @@ footer a:not(ul a),
 	min-width: 2.5rem;
 	min-height: 2.5rem;
 	padding: 0.25rem 0.5rem;
-	transition-property: transform;
-	transition-duration: 150ms;
-	transition-timing-function: ease-out;
-}
-
-header a:active,
-footer a:not(ul a):active,
-.Pagination-itemLink:active,
-.Lightbox footer .flex.items-end a:active {
-	transform: scale(0.96);
 }
 
 .NavList-itemLink {
@@ -30,11 +20,4 @@ footer a:not(ul a):active,
 	align-items: center;
 	min-height: 2.5rem;
 	padding: 0.25rem 0;
-	transition-property: transform;
-	transition-duration: 150ms;
-	transition-timing-function: ease-out;
-}
-
-.NavList-itemLink:active {
-	transform: scale(0.96);
 }

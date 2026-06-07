@@ -20,13 +20,6 @@
 
 .PostList-itemLink {
 	display: block;
-	transition-property: transform;
-	transition-duration: 150ms;
-	transition-timing-function: ease-out;
-
-	&:active {
-		transform: scale(0.96);
-	}
 
 	// See Heydon’s pseudo-content trick: https://inclusive-components.design/cards/#thepseudocontenttrick and https://heydon.github.io/inclusive-components-demos/cards-pseudo-content/
  &::after {
