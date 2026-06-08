@@ -83,7 +83,8 @@
   {{ end }}
   <!-- Favicon -->
   {{ with resources.Get "images/favicon.png" }}
-    <link rel="icon" href="{{ (. | fingerprint).RelPermalink }}" sizes="32x32" type="image/png">
+    <link rel="icon" href="{{ (. | fingerprint).RelPermalink }}" type="image/png">
+    <link rel="shortcut icon" href="{{ (. | fingerprint).RelPermalink }}" type="image/png">
   {{ end }}
   <!-- Lenis (local vendor to avoid CDN issues) -->
   <script src="/vendor/lenis.min.js" defer></script>

@@ -3,7 +3,7 @@
     Minimum 40×40px hit areas
 \*------------------------------------*/
 
-header a,
+header a:not(.top),
 footer a:not(ul a),
 .Pagination-itemLink,
 .Lightbox footer .flex.items-end a {
