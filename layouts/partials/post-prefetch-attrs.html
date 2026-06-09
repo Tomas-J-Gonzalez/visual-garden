@@ -1,0 +1,14 @@
+{{- $page := . -}}
+{{- $image := "" -}}
+{{- if isset $page.Params "image" -}}
+  {{- $base := "/images/" -}}
+  {{- if hugo.IsServer -}}
+    {{- $base = $page.Site.Params.cloudinary_url -}}
+  {{- end -}}
+  {{- $image = printf "%sf_auto/q_60/w_1024/%s" $base $page.Params.image -}}
+{{- else -}}
+  {{- with $page.Resources.GetMatch "{*.*,*.jpg,*.png,*.jpeg}" -}}
+    {{- $image = (.Resize "1000x jpg").RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- with $image }} data-prefetch-image="{{ . }}"{{ end -}}

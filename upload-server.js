@@ -228,6 +228,65 @@ app.post('/api/upload-post', upload, async (req, res) => {
     }
 });
 
+function parsePostFrontmatter(content) {
+    const yamlMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (yamlMatch) {
+        const frontmatter = {};
+        const lines = yamlMatch[1].split(/\r?\n/);
+
+        for (const line of lines) {
+            const match = line.match(/^(\w+):\s*(.*)$/);
+            if (match) {
+                let value = match[2].trim();
+                if ((value.startsWith('"') && value.endsWith('"')) ||
+                    (value.startsWith("'") && value.endsWith("'"))) {
+                    value = value.slice(1, -1);
+                }
+                frontmatter[match[1]] = value;
+            }
+        }
+
+        const tagLines = lines.filter(line => line.trim().startsWith('- '));
+        if (tagLines.length > 0) {
+            frontmatter.tags = tagLines.map(line => line.replace(/^\s*-\s*/, '').trim());
+        }
+
+        return frontmatter;
+    }
+
+    const trimmed = content.trim();
+    if (trimmed.startsWith('{')) {
+        try {
+            return JSON.parse(trimmed);
+        } catch (error) {
+            console.warn('Could not parse JSON frontmatter:', error.message);
+        }
+    }
+
+    return null;
+}
+
+function dateFromSlug(slug) {
+    const match = slug.match(/^(\d{4}-\d{2}-\d{2})/);
+    return match ? match[1] : '';
+}
+
+function buildYamlFrontmatter(frontmatter) {
+    let yaml = '---\n';
+    Object.entries(frontmatter).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+            yaml += `${key}:\n`;
+            value.forEach(item => {
+                yaml += `  - ${item}\n`;
+            });
+        } else {
+            yaml += `${key}: ${value}\n`;
+        }
+    });
+    yaml += '---\n\n';
+    return yaml;
+}
+
 // API endpoint to get all posts
 app.get('/api/posts', async (req, res) => {
     try {
@@ -242,42 +301,19 @@ app.get('/api/posts', async (req, res) => {
             const indexPath = path.join(postsDir, dir, 'index.md');
             try {
                 const content = await fs.readFile(indexPath, 'utf8');
-                
-                // Parse frontmatter
-                const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-                if (frontmatterMatch) {
-                    const frontmatter = {};
-                    const lines = frontmatterMatch[1].split('\n');
-                    
-                    for (const line of lines) {
-                        const match = line.match(/^(\w+):\s*(.*)$/);
-                        if (match) {
-                            let value = match[2].trim();
-                            // Remove quotes if present
-                            if ((value.startsWith('"') && value.endsWith('"')) || 
-                                (value.startsWith("'") && value.endsWith("'"))) {
-                                value = value.slice(1, -1);
-                            }
-                            frontmatter[match[1]] = value;
-                        }
-                    }
-                    
-                    // Parse tags array
-                    const tagLines = lines.filter(line => line.trim().startsWith('- '));
-                    if (tagLines.length > 0) {
-                        frontmatter.tags = tagLines.map(line => line.replace(/^\s*-\s*/, '').trim());
-                    }
-                    
+                const frontmatter = parsePostFrontmatter(content);
+
+                if (frontmatter) {
                     posts.push({
                         slug: dir,
                         title: frontmatter.title || 'Untitled',
-                        date: frontmatter.date || '',
+                        date: frontmatter.date || dateFromSlug(dir),
                         image: frontmatter.image || '',
                         image_alt: frontmatter.image_alt || '',
                         tags: frontmatter.tags || [],
                         video_url: frontmatter.video_url || '',
                         image_ratio: frontmatter.image_ratio || '',
-                        draft: frontmatter.draft === 'true'
+                        draft: frontmatter.draft === true || frontmatter.draft === 'true'
                     });
                 }
             } catch (error) {
@@ -306,27 +342,15 @@ app.put('/api/posts/:slug', async (req, res) => {
         // Read current content
         let content = await fs.readFile(indexPath, 'utf8');
         
-        // Parse and update frontmatter
-        const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-        if (!frontmatterMatch) {
+        const frontmatter = parsePostFrontmatter(content);
+        if (!frontmatter) {
             return res.status(400).json({ error: 'Invalid post format' });
         }
-        
-        const frontmatter = {};
-        const lines = frontmatterMatch[1].split('\n');
-        
-        for (const line of lines) {
-            const match = line.match(/^(\w+):\s*(.*)$/);
-            if (match) {
-                let value = match[2].trim();
-                if ((value.startsWith('"') && value.endsWith('"')) || 
-                    (value.startsWith("'") && value.endsWith("'"))) {
-                    value = value.slice(1, -1);
-                }
-                frontmatter[match[1]] = value;
-            }
+
+        if (!frontmatter.date) {
+            frontmatter.date = dateFromSlug(slug);
         }
-        
+
         // Update fields
         if (title) frontmatter.title = title;
         if (imageAlt) frontmatter.image_alt = imageAlt;
@@ -336,23 +360,9 @@ app.put('/api/posts/:slug', async (req, res) => {
             const tagArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
             frontmatter.tags = tagArray;
         }
-        
-        // Generate new YAML
-        let yaml = '---\n';
-        Object.entries(frontmatter).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-                yaml += `${key}:\n`;
-                value.forEach(tag => {
-                    yaml += `  - ${tag}\n`;
-                });
-            } else {
-                yaml += `${key}: ${value}\n`;
-            }
-        });
-        yaml += '---\n\n';
-        
-        // Write updated content
-        await fs.writeFile(indexPath, yaml);
+
+        // Write updated content (normalises legacy JSON posts to YAML)
+        await fs.writeFile(indexPath, buildYamlFrontmatter(frontmatter));
         
         // Auto-commit changes
         try {

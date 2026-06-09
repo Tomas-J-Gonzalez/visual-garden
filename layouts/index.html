@@ -112,7 +112,7 @@
         {{ end }}
         
         <h2 class="PostList-itemTitle">
-          <a class="PostList-itemLink" href="{{ $page.Permalink }}">{{ $page.Title }}{{ with $page.Params.video_url }} <span class="VideoIcon" aria-hidden="true">▶︎</span><span class="visually-hidden"> video</span>{{ end }}</a>
+          <a class="PostList-itemLink" href="{{ $page.Permalink }}"{{ partial "post-prefetch-attrs.html" $page }}>{{ $page.Title }}{{ with $page.Params.video_url }} <span class="VideoIcon" aria-hidden="true">▶︎</span><span class="visually-hidden"> video</span>{{ end }}</a>
         </h2>
       </li>
     {{ end }}
