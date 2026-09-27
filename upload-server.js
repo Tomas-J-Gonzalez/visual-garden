@@ -124,20 +124,20 @@ app.post('/api/upload-post', upload, async (req, res) => {
 
         // Create frontmatter
         const frontmatter = {
-            title: `"${title}"`,
+            title,
             date: timestamp,
             draft: false, // Always publish immediately
             layout: 'lightbox',
             image: `tomas-master/visual-garden/${cloudinaryPath}${extension}`,
-            image_alt: `"${imageAlt}"`
+            image_alt: imageAlt
         };
 
         if (imageRatio) {
-            frontmatter.image_ratio = `"${imageRatio}"`;
+            frontmatter.image_ratio = imageRatio;
         }
 
         if (videoUrl) {
-            frontmatter.video_url = `"${videoUrl}"`;
+            frontmatter.video_url = videoUrl;
         }
 
         if (tags && tags.trim()) {
@@ -147,19 +147,7 @@ app.post('/api/upload-post', upload, async (req, res) => {
             }
         }
 
-        // Convert to YAML format
-        let yaml = '---\n';
-        Object.entries(frontmatter).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-                yaml += `${key}:\n`;
-                value.forEach(tag => {
-                    yaml += `  - ${tag}\n`;
-                });
-            } else {
-                yaml += `${key}: ${value}\n`;
-            }
-        });
-        yaml += '---\n\n';
+        const yaml = buildYamlFrontmatter(frontmatter);
 
         console.log('📝 Generated frontmatter:', yaml);
 
@@ -238,9 +226,14 @@ function parsePostFrontmatter(content) {
             const match = line.match(/^(\w+):\s*(.*)$/);
             if (match) {
                 let value = match[2].trim();
-                if ((value.startsWith('"') && value.endsWith('"')) ||
-                    (value.startsWith("'") && value.endsWith("'"))) {
-                    value = value.slice(1, -1);
+                if (value.startsWith('"') && value.endsWith('"')) {
+                    try {
+                        value = JSON.parse(value);
+                    } catch (error) {
+                        value = value.slice(1, -1);
+                    }
+                } else if (value.startsWith("'") && value.endsWith("'")) {
+                    value = value.slice(1, -1).replace(/''/g, "'");
                 }
                 frontmatter[match[1]] = value;
             }
@@ -271,16 +264,23 @@ function dateFromSlug(slug) {
     return match ? match[1] : '';
 }
 
+function yamlScalar(value) {
+    if (value === true || value === 'true') return 'true';
+    if (value === false || value === 'false') return 'false';
+    if (typeof value === 'number') return String(value);
+    return JSON.stringify(String(value));
+}
+
 function buildYamlFrontmatter(frontmatter) {
     let yaml = '---\n';
     Object.entries(frontmatter).forEach(([key, value]) => {
         if (Array.isArray(value)) {
             yaml += `${key}:\n`;
             value.forEach(item => {
-                yaml += `  - ${item}\n`;
+                yaml += `  - ${yamlScalar(item)}\n`;
             });
         } else {
-            yaml += `${key}: ${value}\n`;
+            yaml += `${key}: ${yamlScalar(value)}\n`;
         }
     });
     yaml += '---\n\n';
