@@ -3,6 +3,11 @@
 	<ul class="PostList grid">
 		
 		{{ $sorted := sort .Pages "Date" "desc" }}
+		{{ if eq .Data.Term "inspiration" }}
+			{{ $people := where $sorted "Params.tags" "intersect" (slice "people") }}
+			{{ $rest := complement $people $sorted }}
+			{{ $sorted = $people | append $rest }}
+		{{ end }}
 		{{ range $i, $page := $sorted }}
 
 		<li class="PostList-item">
