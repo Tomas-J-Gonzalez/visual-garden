@@ -8,5 +8,6 @@ image_alt: "Burial - Untrue"
 tags:
   - "inspiration"
   - "music"
+  - "album"
 ---
 
