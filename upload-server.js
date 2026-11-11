@@ -103,8 +103,10 @@ app.post('/api/upload-post', upload, async (req, res) => {
             return res.status(400).json({ error: 'Title and image alt text are required' });
         }
 
-        // Generate slug from title
+        // Generate ASCII slug from title (strip accents so URLs stay stable)
         const slug = title
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/-+/g, '-')
@@ -143,6 +145,7 @@ app.post('/api/upload-post', upload, async (req, res) => {
             date: timestamp,
             draft: false, // Always publish immediately
             layout: 'lightbox',
+            slug,
             image: `tomas-master/visual-garden/${cloudinaryPath}${extension}`,
             image_alt: imageAlt
         };
