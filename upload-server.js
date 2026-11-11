@@ -24,6 +24,21 @@ function sanitizeFilename(originalName) {
     return `${base || 'image'}${ext}`;
 }
 
+function pushToOrigin() {
+    execSync('git fetch origin', { stdio: 'inherit' });
+    try {
+        execSync('git pull --rebase origin main', { stdio: 'inherit' });
+    } catch (rebaseError) {
+        try {
+            execSync('git rebase --abort', { stdio: 'inherit' });
+        } catch (_) {
+            // No rebase in progress
+        }
+        throw rebaseError;
+    }
+    execSync('git push origin main', { stdio: 'inherit' });
+}
+
 // Configure Cloudinary (you'll need to set these environment variables)
 cloudinary.config({
     cloud_name: 'tomasgo',
@@ -178,7 +193,7 @@ app.post('/api/upload-post', upload, async (req, res) => {
                 console.log('📁 Changes detected:', gitStatusOutput);
                 execSync('git add .', { stdio: 'inherit' });
                 execSync(`git commit -m "feat: add new post - ${title}"`, { stdio: 'inherit' });
-                execSync('git push origin main', { stdio: 'inherit' });
+                pushToOrigin();
                 console.log('✅ Successfully pushed to GitHub!');
                 gitStatus = 'Committed and pushed to GitHub automatically';
             }
@@ -368,7 +383,7 @@ app.put('/api/posts/:slug', async (req, res) => {
         try {
             execSync('git add .', { stdio: 'inherit' });
             execSync(`git commit -m "update: edit post - ${title || slug}"`, { stdio: 'inherit' });
-            execSync('git push origin main', { stdio: 'inherit' });
+            pushToOrigin();
         } catch (gitError) {
             console.warn('⚠️ Git commit failed:', gitError.message);
         }
@@ -400,7 +415,7 @@ app.delete('/api/posts/:slug', async (req, res) => {
         try {
             execSync('git add .', { stdio: 'inherit' });
             execSync(`git commit -m "delete: remove post - ${slug}"`, { stdio: 'inherit' });
-            execSync('git push origin main', { stdio: 'inherit' });
+            pushToOrigin();
         } catch (gitError) {
             console.warn('⚠️ Git commit failed:', gitError.message);
         }
